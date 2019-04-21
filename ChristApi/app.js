@@ -61,15 +61,18 @@ for(let fileName of files){
   const js_file = path.join(__dirname,'routes',fileName)
   if(fs.existsSync){
     const router = require(js_file)
+    // 授权
+    const loginAuthMiddleware = require('./middleware/LoginAuthMidleware')
+    router.use(loginAuthMiddleware())
     // 全局
     router.use(async (ctx,next)=>{
-      //全局的G变量
-      ctx.state.G={
-          url:'http://www.itying.com',
-          user:ctx.session.user,
-          prevPage:ctx.request.headers['referer']   /*上一页的地址*/
-      }
-    })
+    //全局的G变量
+    ctx.state.G={
+        url:'http://www.itying.com',
+        user:ctx.session.user,
+        prevPage:ctx.request.headers['referer']   /*上一页的地址*/
+    }
+  })
     app.use(router.routes(), router.allowedMethods())
   }else{
     console.log(js_file,'不存在')

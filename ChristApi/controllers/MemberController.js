@@ -42,6 +42,7 @@ module.exports =  class MemberController {
       const token =  uuidv4()
       member.token =token
       await member.save()
+      ctx.session.token = token
       ctx.body = {
         code:20000,
         message:'成功',
@@ -88,6 +89,16 @@ module.exports =  class MemberController {
         code:5008,
         message:'非法的token'
       }
+    }
+  }
+
+  // 退出登录
+  static async logout(ctx, next){
+    //删除token
+    delete ctx.session.token
+    ctx.body = {
+      code:20000,
+      message:'成功'
     }
   }
 }
