@@ -3,12 +3,12 @@ const { Sequelize,sequelize,force} = require('../utils/dbConnect')
 
 const Model = Sequelize.Model
 
-class Music extends Model {
+class Role extends Model {
 
 }
 
-// 歌曲
-Music.init({
+// 专辑
+Role.init({
     id:{
       type: Sequelize.INTEGER,
       primaryKey:true,
@@ -17,23 +17,19 @@ Music.init({
     },
     name:{
       type: Sequelize.STRING(50),
-      comment: '专辑名称'
+      comment: '角色名称'
     },
-    author:{
-      type: Sequelize.STRING(10),
-      comment: '作者'
+    role_key: {
+      type: Sequelize.STRING(50),
+      comment: '角色key'
     },
     desc:{
       type: Sequelize.STRING(100),
       comment: '描述'
     },
-    tumb_url: {
-      type: Sequelize.STRING(100),
-      comment: '缩略图'
-    },
-    big_url:{
-      type: Sequelize.STRING(1000),
-      comment: '大图'
+    routes: {
+      type: Sequelize.TEXT,
+      comment: '路由配置json'
     },
     is_delete:{
       type: Sequelize.BOOLEAN,
@@ -43,11 +39,11 @@ Music.init({
     
 },{
   sequelize,
-  modelName:'music',
+  modelName:'role',
   engine:'Innodb'
 })
 
 // 创建
-Music.sync({ force: force })
+Role.sync({ force: force })
 
-module.exports = {Music, Sequelize}
+module.exports = {Role,Sequelize}

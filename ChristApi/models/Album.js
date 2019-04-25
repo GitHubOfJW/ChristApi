@@ -33,6 +33,7 @@ Album.init({
     },
     is_delete:{
       type: Sequelize.BOOLEAN,
+      defaultValue: false,
       comment: '是否删除'
     }
     

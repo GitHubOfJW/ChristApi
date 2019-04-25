@@ -53,6 +53,6 @@ User.init({
 })
 
 // 创建
-Member.sync({ force: force })
+User.sync({ force: force })
 
-module.exports = {Member, Sequelize}
+module.exports = {User, Sequelize}

@@ -1,14 +1,14 @@
 // 数据库连接
-const { Sequelize,sequelize,force} = require('../utils/dbConnect')
+const { Sequelize,sequelize,force} = require('../../utils/dbConnect')
 
 const Model = Sequelize.Model
 
-class Music extends Model {
+class Rule extends Model {
 
 }
 
-// 歌曲
-Music.init({
+// 规则
+Rule.init({
     id:{
       type: Sequelize.INTEGER,
       primaryKey:true,
@@ -17,37 +17,34 @@ Music.init({
     },
     name:{
       type: Sequelize.STRING(50),
-      comment: '专辑名称'
+      comment: '规则名称'
     },
-    author:{
-      type: Sequelize.STRING(10),
-      comment: '作者'
-    },
-    desc:{
+    descr:{
       type: Sequelize.STRING(100),
       comment: '描述'
     },
-    tumb_url: {
+    path: {
       type: Sequelize.STRING(100),
-      comment: '缩略图'
+      allowNull: true,
+      comment: '规则'
     },
-    big_url:{
-      type: Sequelize.STRING(1000),
-      comment: '大图'
+    parent_id: {
+      type: Sequelize.INTEGER,
+      defaultValue: 0,
+      comment:'分类父id'
     },
     is_delete:{
       type: Sequelize.BOOLEAN,
       defaultValue: false,
       comment: '是否删除'
     }
-    
 },{
   sequelize,
-  modelName:'music',
+  modelName:'rule',
   engine:'Innodb'
 })
 
 // 创建
-Music.sync({ force: force })
+Rule.sync({ force: force })
 
-module.exports = {Music, Sequelize}
+module.exports = {Rule,Sequelize}

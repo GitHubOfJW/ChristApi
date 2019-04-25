@@ -38,7 +38,7 @@ Member.init({
       comment: '性别'
     },
     birth: {
-      type: Sequelize.BIGINT,
+      type: Sequelize.DATE,
       allowNull:true,
       comment:'生日'
     },
@@ -60,6 +60,11 @@ Member.init({
       type: Sequelize.INTEGER,
       allowNull:true,
       comment:'角色'
+    },
+    role_key:{
+      type: Sequelize.STRING(50),
+      allowNull:true,
+      comment:'角色关键字'
     },
     is_delete: {
       type: Sequelize.BOOLEAN,
