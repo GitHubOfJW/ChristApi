@@ -33,6 +33,11 @@ Rule.init({
       defaultValue: 0,
       comment:'分类父id'
     },
+    sort: {
+      type: Sequelize.INTEGER,
+      defaultValue: 0,
+      comment: '排序'
+    },
     is_delete:{
       type: Sequelize.BOOLEAN,
       defaultValue: false,

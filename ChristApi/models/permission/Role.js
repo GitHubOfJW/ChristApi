@@ -23,7 +23,7 @@ Role.init({
       type: Sequelize.STRING(50),
       comment: '角色key'
     },
-    desc:{
+    descr:{
       type: Sequelize.STRING(100),
       comment: '描述'
     },

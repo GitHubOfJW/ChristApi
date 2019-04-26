@@ -2,6 +2,9 @@ const {Rule,Sequelize} = require('../models/permission/Rule')
 const validator = require('validator')
 const md5 =  require('md5')
 const uuidv4 =  require('uuid/v4')
+
+Rule.belongsTo(Rule,{ as:'father', foreignKey: 'parent_id', constraints: false})
+
 module.exports =  class RuleController {
   
   // 获取根分类
@@ -29,35 +32,39 @@ module.exports =  class RuleController {
   static async list(ctx, next){
     const page = ctx.query.page || 1
     const limit = ctx.query.limit || 20
-    const  { gender = false, mobile = '', name = '', wechat = '', qq = '', sort = '+id' } = ctx.query
+    const  { name = '', path = '', parent_id = 0, sort = '+sort' } = ctx.query
     const orders = sort.split(',')
     const orderby = []
     for(let sortItem of orders){
        orderby.push([Sequelize.col(sortItem.substring(1)),sortItem.startsWith('+') ? 'ASC':'DESC'])
     }
+
+    const where = {
+      is_delete: false,
+      name: {
+        [Sequelize.Op.like]: `%${ name }%`,
+      },
+      path: {
+        [Sequelize.Op.like]: `%${ path }%`,
+      },
+    }
+
+    if(parent_id > 0){
+      where.sort = parent_id
+    }
+
     //  查询
     const data = await Rule.findAndCountAll({
       attributes:{
         exclude: ['is_delete']
       },
-      where:{
-        is_delete: false,
-        // mobile: {
-        //   [Sequelize.Op.like]: `${ mobile }%`,
-        // },
-        // wechat: {
-        //   [Sequelize.Op.like]: `${ wechat }%`,
-        // },
-        // qq: { 
-        //   [Sequelize.Op.like]: `${ qq }%`,
-        // },
-        // name:{
-        //   [Sequelize.Op.like]: `%${ name }%`,
-        // },
-        // gender:{
-        //   [Sequelize.Op.in]:gender < 0 ? [true,false]:[gender==0]
-        // }
-      },
+      include: [
+        {
+          model: Rule,
+          as: 'father'
+        }
+      ],
+      where:where,
       order:orderby,
       offset: ((page-1) * limit)+0,
       limit: parseInt(limit)
@@ -80,8 +87,20 @@ module.exports =  class RuleController {
     
     // 创建
     const result = await Rule.create({
-      ...data
+      ...data,
+      sort:data.parent_id
     })
+
+    // 更新分类
+    if(data.parent_id == 0){
+      await Rule.update({
+        sort: result.id
+      },{
+        where:{
+          id: result.id
+        }
+      })
+    }
 
     ctx.body = {
       code:20000,
@@ -95,6 +114,21 @@ module.exports =  class RuleController {
   // 修改管理员
   static async update(ctx, next){
     const data =  ctx.request.body
+    if (data.parent_id != 0){
+      data.path = null
+      const count = await Rule.count({
+        where: {
+          sort: data.id
+        }
+      })
+      if (count > 1) {
+        ctx.body = {
+          code: 5000,
+          message:'无法修改所属分类，此分类下存在权限'
+        }
+        return
+      }
+    }
     delete data.is_delete
     delete data.createAt
     delete data.role_id
@@ -106,11 +140,15 @@ module.exports =  class RuleController {
 
     data.updatedAt = new Date()
     // 修改数据
-    await Rule.update(data,{
+    await Rule.update({
+      ...data,
+      sort: data.parent_id
+    },{
       where: {
         id:id
       }
     })
+
     ctx.body = {
       code:20000,
       message:'修改成功'
