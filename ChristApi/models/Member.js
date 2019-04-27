@@ -66,6 +66,11 @@ Member.init({
       allowNull:true,
       comment:'角色关键字'
     },
+    is_admin: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: false,
+      comment:'是否是管理员'
+    },
     is_delete: {
       type: Sequelize.BOOLEAN,
       defaultValue: false,
@@ -86,6 +91,7 @@ Member.sync({ force: force }).then(result=>{
       gender:true,
       birth:Date.now(),
       wechat:'zhujianwei9823',
+      is_admin:true,
       qq:'1284627282',
       avatar:'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
       token:uuidv4()

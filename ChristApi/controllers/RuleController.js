@@ -45,7 +45,11 @@ module.exports =  class RuleController {
         [Sequelize.Op.like]: `%${ name }%`,
       },
       path: {
-        [Sequelize.Op.like]: `%${ path }%`,
+        [Sequelize.Op.or]:{
+          [Sequelize.Op.like]: `%${ path }%`,
+          [Sequelize.Op.eq]: null
+        }
+        
       },
     }
 
@@ -115,7 +119,6 @@ module.exports =  class RuleController {
   static async update(ctx, next){
     const data =  ctx.request.body
     if (data.parent_id != 0){
-      data.path = null
       const count = await Rule.count({
         where: {
           sort: data.id
@@ -128,6 +131,8 @@ module.exports =  class RuleController {
         }
         return
       }
+    }else{
+      data.path = null
     }
     delete data.is_delete
     delete data.createAt

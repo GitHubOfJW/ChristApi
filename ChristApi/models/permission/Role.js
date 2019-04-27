@@ -1,5 +1,5 @@
 // 数据库连接
-const { Sequelize,sequelize,force} = require('../utils/dbConnect')
+const { Sequelize,sequelize,force} = require('../../utils/dbConnect')
 
 const Model = Sequelize.Model
 
@@ -29,7 +29,18 @@ Role.init({
     },
     routes: {
       type: Sequelize.TEXT,
-      comment: '路由配置json'
+      comment: '路由配置json',
+      set(val){
+        try{
+          this.setDataValue('routes',JSON.stringify(val))
+        }catch(err){
+          this.setDataValue('routes',JSON.stringify({}))
+        }
+      },
+      get(){
+        const data = this.getDataValue('routes')
+        return JSON.parse(data)
+      }
     },
     is_delete:{
       type: Sequelize.BOOLEAN,

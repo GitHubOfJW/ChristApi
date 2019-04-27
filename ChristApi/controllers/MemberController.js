@@ -1,7 +1,12 @@
-const {Member,Sequelize} = require('../models/Member')
+const {Member, Sequelize} = require('../models/Member')
+const {Role} = require('../models/permission/Role')
 const validator = require('validator')
 const md5 =  require('md5')
 const uuidv4 =  require('uuid/v4')
+Member.belongsTo(Role,{
+  foreignKey:'role_id',
+  constraints:false
+})
 module.exports =  class MemberController {
   
   // 用户登录
@@ -60,7 +65,6 @@ module.exports =  class MemberController {
 
   // 获取信息
   static async info(ctx, next){
-    // console.log(ctx.request.params,ctx.request.query)
     const { token } = ctx.request.query
     if(validator.isEmpty(token)){
       ctx.body = {
@@ -74,23 +78,33 @@ module.exports =  class MemberController {
     const member = await Member.findOne({
       where:{
         token:token
-      }
+      },
+      include:[{
+        model: Role,
+      }]
     })
 
     // 存在
     if(member){
+      const role = {}
+      if (member.is_admin) {
+        const { constantRoutes,asyncRoutes} = require('../config/routes')
+        role.role_key = 'admin'
+        role.routes = asyncRoutes
+        
+      }
       ctx.body = {
         code:20000,
         message:'成功',
         data:{
           ...JSON.parse(JSON.stringify(member)),
-          roles:['admin']
+          role:member.role || role
         }
       }
     }else{
       ctx.body = {
         code:5008,
-        message:'非法的token'
+        message:'账号异常'
       }
     }
   }

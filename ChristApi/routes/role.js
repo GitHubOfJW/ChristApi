@@ -1,10 +1,10 @@
 const router = require('koa-router')()
 
-const controller =  require('../controllers/RuleController')
+const controller =  require('../controllers/RoleController')
 
-router.prefix('/rule')
+router.prefix('/role')
 
-router.get('/cates', controller.ruleCate)
+router.get('/routes', controller.routes)
 router.get('/list', controller.list)
 router.post('/add', controller.create)
 router.put('/edit/:id', controller.update)

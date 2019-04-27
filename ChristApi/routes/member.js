@@ -8,7 +8,7 @@ router.post('/login', controller.login)
 router.get('/info', controller.info)
 router.delete('/logout', controller.logout)
 router.get('/list', controller.list)
-router.post('/create', controller.create)
-router.put('/update', controller.update)
+router.post('/add', controller.create)
+router.put('/edit/:id', controller.update)
 
 module.exports = router

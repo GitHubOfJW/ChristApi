@@ -1,5 +1,5 @@
  
-export const constantRoutes = [
+const constantRoutes = [
 
   {
     path: '/redirect',
@@ -72,7 +72,7 @@ export const constantRoutes = [
   }
 ]
 
-export const asyncRoutes = [
+const asyncRoutes = [
   {
     path: '/nested',
     component: 'layout/Layout',
@@ -583,3 +583,8 @@ export const asyncRoutes = [
 
   { path: '*', redirect: '/404', hidden: true }
 ]
+
+module.exports = {
+  constantRoutes,
+  asyncRoutes
+}

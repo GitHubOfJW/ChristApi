@@ -5,46 +5,39 @@ const uuidv4 =  require('uuid/v4')
 
 module.exports =  class RoleController {
    
+  // 获取路由
+  static async routes(ctx, next){
+    const { constantRoutes, asyncRoutes } = require('../config/routes')
+    ctx.body = {
+      code: 20000,
+      message: '成功',
+      data: constantRoutes.concat(asyncRoutes)
+    }
+  }
+
+  // 角色
+  static async getRoles(ctx, next){
+    const data = await Role.findAndCountAll()
+    ctx.body = {
+      code: 20000,
+      message: '成功',
+      data: {
+        items: data.rows,
+        total: data.count
+      }
+    }
+  }
 
   // 获取列表
   static async list(ctx, next){
-    const page = ctx.query.page || 1
-    const limit = ctx.query.limit || 20
-    const  { gender = false, mobile = '', name = '', wechat = '', qq = '', sort = '+id' } = ctx.query
-    const orders = ('+parent_id,'+sort).split(',')
-    const orderby = []
-    for(let sortItem of orders){
-       orderby.push([Sequelize.col(sortItem.substring(1)),sortItem.startsWith('+') ? 'ASC':'DESC'])
-    }
     //  查询
     const data = await Role.findAndCountAll({
       attributes:{
         exclude: ['is_delete']
       },
       where:{
-        is_delete: false,
-        parent_id: {
-          [Sequelize.Op.notIn]: [0]
-        }
-        // mobile: {
-        //   [Sequelize.Op.like]: `${ mobile }%`,
-        // },
-        // wechat: {
-        //   [Sequelize.Op.like]: `${ wechat }%`,
-        // },
-        // qq: { 
-        //   [Sequelize.Op.like]: `${ qq }%`,
-        // },
-        // name:{
-        //   [Sequelize.Op.like]: `%${ name }%`,
-        // },
-        // gender:{
-        //   [Sequelize.Op.in]:gender < 0 ? [true,false]:[gender==0]
-        // }
-      },
-      order:orderby,
-      offset: ((page-1) * limit)+0,
-      limit: parseInt(limit)
+        is_delete: false
+      }
     })
 
     ctx.body = {
@@ -60,10 +53,11 @@ module.exports =  class RoleController {
   // 创建管理员
   static async create(ctx, next){
     const  data =  ctx.request.body
+    data.role_key = uuidv4().substring(0,8)
     delete data.id
     
     // 创建
-    const result = await Rule.create({
+    const result = await Role.create({
       ...data
     })
 
@@ -71,7 +65,8 @@ module.exports =  class RoleController {
       code:20000,
       message: '创建成功',
       data: {
-        id: result.id
+        id: result.id,
+        role_key: data.role_key
       }
     }
   }
@@ -90,7 +85,7 @@ module.exports =  class RoleController {
 
     data.updatedAt = new Date()
     // 修改数据
-    await Rule.update(data,{
+    await Role.update(data,{
       where: {
         id:id
       }
