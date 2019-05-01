@@ -19,9 +19,14 @@ Album.init({
       type: Sequelize.STRING(50),
       comment: '专辑名称'
     },
-    desc:{
+    descr:{
       type: Sequelize.STRING(100),
       comment: '描述'
+    },
+    music_count: {
+      type: Sequelize.INTEGER,
+      defaultValue: 0,
+      comment: '专辑内音乐数'
     },
     tumb_url: {
       type: Sequelize.STRING(100),

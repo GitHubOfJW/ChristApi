@@ -1,12 +1,19 @@
 const Member = require('../models/Member')
+const path =  require('path')
 
 module.exports = class IndexController {
-
-  // default 默认根目录
-  static async index(ctx, next){
-    
-    await ctx.render('index', {
-      title: 'Hello Koa 2!'
-    })
+ 
+  // 上传照片
+  static async uploadImage(ctx, next){
+    const destination = ctx.req.file.destination
+    const path = destination.substring(destination.indexOf('/public')+'/public'.length)
+    ctx.body = {
+      code: 20000,
+      message: '上传成功',
+      data: {
+        filename:ctx.req.file.filename,
+        url: ctx.state.G.url + (path + ctx.req.file.filename).replace('//','/')
+      }
+    }
   }
 }

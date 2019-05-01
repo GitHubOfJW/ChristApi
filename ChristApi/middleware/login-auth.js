@@ -4,6 +4,10 @@ const validator = require('validator')
 const {Member,Sequelize} =  require('../models/Member')
 module.exports =  function(){
   return async (ctx,next) => {
+    if(ctx.url.indexOf('/login')){
+      await next()
+      return
+    }
     // 获取session 如果是空的
     if(validator.isEmpty(ctx.session.token)){
       // 没有登录
@@ -11,7 +15,7 @@ module.exports =  function(){
         code:50014,
         message:'会话已过期'
       }
-      return 
+      return
     }else{
       const count = await Member.count({
         where:{

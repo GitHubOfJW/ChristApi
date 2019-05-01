@@ -48,6 +48,7 @@ module.exports =  class MemberController {
       member.token =token
       await member.save()
       ctx.session.token = token
+      ctx.session.id = member.id
       ctx.body = {
         code:20000,
         message:'成功',

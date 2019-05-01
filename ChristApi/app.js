@@ -9,9 +9,9 @@ const logger = require('koa-logger')
 const session = require('koa-session')
 const cors = require('koa2-cors')
 const compress = require('koa-compress')
-
-const fs =  require('mz/fs')
+const router = require('koa-router')()
 const path = require('path')
+const fs =  require('mz/fs')
 
 const { sessionConfig } = require('./config')
 
@@ -53,6 +53,19 @@ app.use(views(__dirname + '/views', {
 //   const ms = new Date() - start
 //   console.log(`${ctx.method} ${ctx.url} - ${ms}ms`)
 // })
+// 全局
+app.use(async (ctx,next)=>{
+  //全局的G变量
+  ctx.state.G={
+      url:'http://localhost:3000',
+      prevPage:ctx.request.headers['referer']   /*上一页的地址*/
+  }
+  await next()
+})
+
+// 授权
+const loadAuth = require('./middleware/login-auth')
+app.use(loadAuth())
 
 // routes
 const files = fs.readdirSync('./routes')
@@ -61,25 +74,11 @@ for(let fileName of files){
   const js_file = path.join(__dirname,'routes',fileName)
   if(fs.existsSync){
     const router = require(js_file)
-    // 授权
-    const loginAuthMiddleware = require('./middleware/LoginAuthMidleware')
-    router.use(loginAuthMiddleware())
-    // 全局
-    router.use(async (ctx,next)=>{
-    //全局的G变量
-    ctx.state.G={
-        url:'http://www.itying.com',
-        user:ctx.session.user,
-        prevPage:ctx.request.headers['referer']   /*上一页的地址*/
-    }
-  })
     app.use(router.routes(), router.allowedMethods())
   }else{
     console.log(js_file,'不存在')
   }
 }
-
-
 
 // error handler
 onerror(app)
