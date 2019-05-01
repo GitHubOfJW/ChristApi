@@ -11,7 +11,7 @@ module.exports =  class RoleController {
     ctx.body = {
       code: 20000,
       message: '成功',
-      data: constantRoutes.concat(asyncRoutes)
+      data: asyncRoutes
     }
   }
 

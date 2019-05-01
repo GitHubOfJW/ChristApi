@@ -8,5 +8,6 @@ router.get('/routes', controller.routes)
 router.get('/list', controller.list)
 router.post('/add', controller.create)
 router.put('/edit/:id', controller.update)
+router.get('/roles', controller.getRoles)
 
 module.exports = router

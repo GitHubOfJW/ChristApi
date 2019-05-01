@@ -61,11 +61,6 @@ Member.init({
       allowNull:true,
       comment:'角色'
     },
-    role_key:{
-      type: Sequelize.STRING(50),
-      allowNull:true,
-      comment:'角色关键字'
-    },
     is_admin: {
       type: Sequelize.BOOLEAN,
       defaultValue: false,

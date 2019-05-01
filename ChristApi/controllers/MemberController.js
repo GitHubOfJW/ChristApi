@@ -87,7 +87,7 @@ module.exports =  class MemberController {
     // 存在
     if(member){
       const role = {}
-      if (member.is_admin) {
+      if (member.is_admin && !member.role) {
         const { constantRoutes,asyncRoutes} = require('../config/routes')
         role.role_key = 'admin'
         role.routes = asyncRoutes
@@ -192,7 +192,6 @@ module.exports =  class MemberController {
     const data =  ctx.request.body
     delete data.is_delete
     delete data.createAt
-    delete data.role_id
     delete data.role_key
     delete data.token
     delete data.avatar
