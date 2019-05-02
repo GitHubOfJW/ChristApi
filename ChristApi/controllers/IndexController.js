@@ -4,7 +4,7 @@ const path =  require('path')
 module.exports = class IndexController {
  
   // 上传照片
-  static async uploadImage(ctx, next){
+  static async upload(ctx, next){
     const destination = ctx.req.file.destination
     const path = destination.substring(destination.indexOf('/public')+'/public'.length)
     ctx.body = {

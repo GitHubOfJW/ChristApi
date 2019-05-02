@@ -22,5 +22,5 @@ sequelize.authenticate().then(() => {
 module.exports = {
   Sequelize,
   sequelize,
-  force:true,
+  force:false,
 }

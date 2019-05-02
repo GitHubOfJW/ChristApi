@@ -1,33 +1,11 @@
-const {Album, Sequelize}  = require('../models/Album')
-module.exports =  class AlbumController {
-  // 获取列表
-  static async getAlbums(ctx, next){
-    //  查询
-    const data = await Album.findAndCountAll({
-      attributes:{
-        exclude: ['is_delete']
-      },
-      where:{
-        is_delete: false
-      }
-    })
-
-    ctx.body = {
-      code: 20000,
-      message: '获取成功',
-      data: {
-        items:data.rows,
-        total:data.count
-      }
-    }
-  }
-
+const {Music, Sequelize}  = require('../models/Music')
+module.exports =  class MusicController {
   // 获取列表
   static async list(ctx, next){
     const page = ctx.query.page || 1
     const limit = ctx.query.limit || 20
     //  查询
-    const data = await Album.findAndCountAll({
+    const data = await Music.findAndCountAll({
       attributes:{
         exclude: ['is_delete']
       },
@@ -54,7 +32,7 @@ module.exports =  class AlbumController {
     delete data.id
     
     // 创建
-    const result = await Album.create({
+    const result = await Music.create({
       ...data
     })
 
@@ -77,7 +55,7 @@ module.exports =  class AlbumController {
 
     data.updatedAt = new Date()
     // 修改数据
-    await Album.update(data,{
+    await Music.update(data,{
       where: {
         id:id
       }

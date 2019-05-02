@@ -17,30 +17,47 @@ Music.init({
     },
     name:{
       type: Sequelize.STRING(50),
-      comment: '专辑名称'
+      comment: '歌曲名称'
     },
     author:{
       type: Sequelize.STRING(10),
+      allowNull: true,
       comment: '作者'
     },
-    desc:{
+    descr:{
       type: Sequelize.STRING(100),
+      allowNull: true,
       comment: '描述'
     },
     tumb_url: {
       type: Sequelize.STRING(100),
+      allowNull: true,
       comment: '缩略图'
     },
     big_url:{
-      type: Sequelize.STRING(1000),
+      type: Sequelize.STRING(100),
+      allowNull: true,
       comment: '大图'
+    },
+    source_url: {
+      type: Sequelize.STRING(100),
+      allowNull: true,
+      comment: '资源地址'
+    },
+    album_id: {
+      type: Sequelize.INTEGER,
+      comment: '所属专辑'
+    },
+    time: {
+      type: Sequelize.INTEGER,
+      defaultValue: 0,
+      comment: '时间毫秒值'
     },
     is_delete:{
       type: Sequelize.BOOLEAN,
       defaultValue: false,
       comment: '是否删除'
     }
-    
 },{
   sequelize,
   modelName:'music',

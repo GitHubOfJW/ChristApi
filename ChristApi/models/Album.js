@@ -30,10 +30,12 @@ Album.init({
     },
     tumb_url: {
       type: Sequelize.STRING(100),
+      allowNull: true,
       comment: '缩略图'
     },
     big_url:{
       type: Sequelize.STRING(1000),
+      allowNull: true,
       comment: '大图'
     },
     is_delete:{
