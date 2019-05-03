@@ -4,7 +4,7 @@ const validator = require('validator')
 const {Member,Sequelize} =  require('../models/Member')
 module.exports =  function(){
   return async (ctx,next) => {
-    if(ctx.url.indexOf('/login')){
+    if(ctx.url.indexOf('/login') || ctx.url.indexOf('/mini')){
       await next()
       return
     }
