@@ -15,6 +15,18 @@ User.init({
       autoIncrement:true,
       comment: '主键'
     },
+    openid:{
+      type: Sequelize.STRING(40),
+      comment: '小程序标识'
+    },
+    session_key:{
+      type: Sequelize.STRING(40),
+      comment: '密钥'
+    },
+    unionid:{
+      type: Sequelize.STRING(40),
+      comment: '公众平台统一用户标识'
+    },
     mobile:{
       type: Sequelize.STRING(11),
       comment: '手机号'
@@ -55,4 +67,4 @@ User.init({
 // 创建
 User.sync({ force: force })
 
-module.exports = {User, Sequelize}
+module.exports = {User, Sequelize, sequelize}

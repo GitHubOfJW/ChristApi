@@ -57,4 +57,4 @@ Role.init({
 // 创建
 Role.sync({ force: force })
 
-module.exports = {Role,Sequelize}
+module.exports = {Role,Sequelize,sequelize}

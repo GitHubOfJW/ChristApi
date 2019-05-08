@@ -53,4 +53,4 @@ Album.init({
 // 创建
 Album.sync({ force: force })
 
-module.exports = {Album,Sequelize}
+module.exports = {Album,Sequelize,sequelize}

@@ -52,4 +52,4 @@ Rule.init({
 // 创建
 Rule.sync({ force: force })
 
-module.exports = {Rule,Sequelize}
+module.exports = {Rule,Sequelize,sequelize}

@@ -93,4 +93,4 @@ Member.sync({ force: force }).then(result=>{
     })
 })
 
-module.exports = {Member, Sequelize}
+module.exports = {Member, Sequelize, sequelize}

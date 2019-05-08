@@ -53,6 +53,21 @@ Music.init({
       defaultValue: 0,
       comment: '时间毫秒值'
     },
+    play_count: {
+      type: Sequelize.BIGINT,
+      defaultValue: 0,
+      comment: '播放量'
+    },
+    support_count: {
+      type: Sequelize.BIGINT,
+      defaultValue: 0,
+      comment: '收藏量'
+    },
+    num: {
+      type: Sequelize.INTEGER,
+      defaultValue: 1,
+      comment: '序号'
+    },
     is_delete:{
       type: Sequelize.BOOLEAN,
       defaultValue: false,
@@ -67,4 +82,4 @@ Music.init({
 // 创建
 Music.sync({ force: force })
 
-module.exports = {Music, Sequelize}
+module.exports = {Music, Sequelize, sequelize}

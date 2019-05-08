@@ -1,5 +1,31 @@
 const {Album, Sequelize}  = require('../models/Album')
+
 module.exports =  class AlbumController {
+
+  // 获取专辑
+  static async fineOne(ctx, next) {
+    if(!ctx.params.id){
+      ctx.body = {
+        code: 50000,
+        message: '失败'
+      }
+      return
+    }
+    // 查询专辑
+    const album = await Album.findOne({
+      where: {
+        id: ctx.params.id
+      }
+    })
+    
+    ctx.body = {
+      code: 20000,
+      message: '成功',
+      data: album
+    }
+
+  }
+
   // 获取列表
   static async getAlbums(ctx, next){
     //  查询
