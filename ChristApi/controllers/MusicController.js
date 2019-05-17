@@ -1,5 +1,12 @@
 const {Music, Sequelize}  = require('../models/Music')
 const {Album, sequelize} = require('../models/Album')
+const {Favorite} = require('../models/Favorite')
+
+Music.hasOne(Favorite,{
+  foreignKey: 'music_id',
+  constraints: false
+})
+
 module.exports =  class MusicController {
   // 获取下一首播放的歌曲
   static async nextMusic(ctx, next) {
@@ -10,7 +17,13 @@ module.exports =  class MusicController {
       const music = await Music.findOne({
         where: {
           id:music_id
-        }
+        },
+        include: [{
+          model: Favorite,
+          scope: {
+            is_delete: false
+          }
+        }]
       })
 
       let nextMusic =  await Music.findOne({
@@ -60,11 +73,11 @@ module.exports =  class MusicController {
 
     if(maxId != -1) {
       where.id = {
-        [Sequelize.Op.lt]: maxId
+        [Sequelize.Op.gt]: maxId
       }
     }else if(minId != -1){
       where.id = {
-        [Sequelize.Op.gt]: minId
+        [Sequelize.Op.lt]: minId
       }
     }
 
@@ -73,7 +86,11 @@ module.exports =  class MusicController {
         exclude: ['is_delete']
       },
       where: where,
-      limit: parseInt(limit)
+      limit: parseInt(limit),
+      order:[[Sequelize.col('num'), "ASC"]],
+      include: [{
+        model: Favorite,
+      }]
     })
   
     ctx.body = {

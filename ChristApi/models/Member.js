@@ -79,6 +79,7 @@ Member.init({
 
 // 创建
 Member.sync({ force: force }).then(result=>{
+  if(force){
     Member.create({
       mobile:'13311255165',
       name:'朱建伟',
@@ -91,6 +92,7 @@ Member.sync({ force: force }).then(result=>{
       avatar:'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
       token:uuidv4()
     })
+  }
 })
 
 module.exports = {Member, Sequelize, sequelize}

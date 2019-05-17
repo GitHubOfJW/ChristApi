@@ -18,6 +18,26 @@ module.exports = class IndexController {
     }
   }
 
+  static getTopMenus() {
+    const data = [{
+      imgSrc: 'http://localhost:3000/images/qrcode.png',
+      title: '扫码分享',
+      type: 0,
+      content: ''
+    },{
+      imgSrc: 'http://localhost:3000/images/awared.png',
+      title: '打赏声明',
+      type: 1,
+      content: ''
+    },{
+      imgSrc: 'http://localhost:3000/images/mzsm.png',
+      title: '免责声明',
+      type: 2,
+      content: ''
+    }]
+    return data
+  }
+
   static async miniIndex(ctx, next) {
     const { page = 1 } = ctx.request.body
     const { page_size = 10 } = ctx.request.body
@@ -32,7 +52,8 @@ module.exports = class IndexController {
       code: 20000,
       message: "成功",
       data: {
-        albums
+        albums,
+        menus: IndexController.getTopMenus()
       }
     }
   }
