@@ -20,17 +20,17 @@ module.exports = class IndexController {
 
   static getTopMenus() {
     const data = [{
-      imgSrc: 'http://localhost:3000/images/qrcode.png',
+      imgSrc: 'http://192.168.2.106:3000/images/qrcode.png',
       title: '扫码分享',
       type: 0,
       content: ''
     },{
-      imgSrc: 'http://localhost:3000/images/awared.png',
+      imgSrc: 'http://192.168.2.106:3000/images/awared.png',
       title: '打赏声明',
       type: 1,
       content: ''
     },{
-      imgSrc: 'http://localhost:3000/images/mzsm.png',
+      imgSrc: 'http://192.168.2.106:3000/images/mzsm.png',
       title: '免责声明',
       type: 2,
       content: ''

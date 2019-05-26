@@ -57,7 +57,7 @@ app.use(views(__dirname + '/views', {
 app.use(async (ctx,next)=>{
   //全局的G变量
   ctx.state.G={
-      url:'api.banbeigen.com',
+      url:'http://192.168.2.106:3000',
       prevPage:ctx.request.headers['referer']   /*上一页的地址*/
   }
   await next()

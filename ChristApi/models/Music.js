@@ -68,6 +68,20 @@ Music.init({
       defaultValue: 1,
       comment: '序号'
     },
+    lrc: {
+      type: Sequelize.TEXT,
+      comment: '歌词',
+    },
+    has_lrc: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: false,
+      comment: '有没有歌词'
+    },
+    lrc_edit: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: true,
+      comment: 'lrc需要编辑'
+    },
     is_delete:{
       type: Sequelize.BOOLEAN,
       defaultValue: false,

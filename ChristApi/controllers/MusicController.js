@@ -7,7 +7,27 @@ Music.hasOne(Favorite,{
   constraints: false
 })
 
+Music.belongsTo(Album,{
+  foreignKey: 'album_id',
+  constraints: false
+})
+
 module.exports =  class MusicController {
+
+  // 获取音乐
+  static async getById(ctx, next) {
+    const id = ctx.params.id
+    const music = await Music.findOne({
+      where: {
+        id: id
+      }
+    })
+
+    ctx.body = {
+      code: 20000,
+      data: music
+    }
+  }
   // 获取下一首播放的歌曲
   static async nextMusic(ctx, next) {
     // 1 单曲循环 2 列表循环
@@ -26,23 +46,46 @@ module.exports =  class MusicController {
         }]
       })
 
+      if (playType == 1) {
+        ctx.body = {
+          code: 20000,
+          message: '获取成功',
+          data: music
+        }
+        return
+      }
+
+
+
       let nextMusic =  await Music.findOne({
         where: {
           album_id: music.album_id,
           id: {
             [Sequelize.Op.gt]: music_id
           }
-        }
+        },
+        include: [{
+          model: Favorite,
+          scope: {
+            is_delete: false
+          }
+        }]
       })
 
       // 如果没有音乐
       if ( !nextMusic) {
-        ctx.body = {
-          code: 50000,
-          message: '当前专辑已播放完',
-          data:{}
-        }
-        return 
+        nextMusic =  await Music.findOne({
+          where: {
+            album_id: music.album_id,
+          },
+          include: [{
+            model: Favorite,
+            scope: {
+              is_delete: false
+            }
+          }],
+          limit:1
+        })
       }
 
       ctx.body = {
@@ -102,6 +145,45 @@ module.exports =  class MusicController {
       }
     }
   }
+
+   // 获取收藏列表
+   static async miniFavoriteList(ctx, next){
+    const { page = 1, pageSize = 20 } = ctx.query
+    //  查询
+    const where = {
+      is_delete: false,
+    }
+
+    const data = await Music.findAndCountAll({
+      attributes:{
+        exclude: ['is_delete']
+      },
+      where: where,
+      limit: parseInt(pageSize),
+      offset: parseInt((page -1)*pageSize),
+      order:[[Sequelize.col('favorite.updatedAt'), "DESC"]],
+      include: [{
+        model: Favorite,
+        where: {
+          is_delete: false
+        }
+      },{
+        model: Album,
+        attributes: {
+          include:['big_url']
+        }
+      }]
+    })
+  
+    ctx.body = {
+      code: 20000,
+      message: '获取成功',
+      data: {
+        items:data.rows,
+        total:data.count
+      }
+    }
+  }
   
   // 获取列表
   static async list(ctx, next){
@@ -133,6 +215,31 @@ module.exports =  class MusicController {
   static async create(ctx, next){
     const  data =  ctx.request.body
     delete data.id
+
+    if(!data.lrc){
+      data.has_lrc = false
+    } else {
+      // 有歌词
+      data.has_lrc = true
+      const lrcs = (data.lrc).split('\n')
+      // 如果歌词中
+      data.lrc_edit = false
+      const tlrcs = []
+      for(let item of lrcs) {
+        if(item.indexOf('[') >= 0){
+          if(item.indexOf('[0:0:0]') >= 0) {
+            data.lrc_edit = true
+          }
+          tlrcs.push(item)
+        }else{
+          data.lrc_edit = true
+          tlrcs.push(`[0:0:0]${item}`)
+        }
+      }
+      data.lrc = tlrcs.join('\n')
+    }
+    
+
     
     const result = await sequelize.transaction(t => {
       return (async () => {
@@ -173,22 +280,60 @@ module.exports =  class MusicController {
     const data =  ctx.request.body
     delete data.is_delete
     delete data.createAt
-    const id = data.id
+    const id = ctx.params.id
     delete data.id
 
+    const m = await Music.findOne({
+      where: {
+        id: id
+      }
+    })
+
     data.updatedAt = new Date()
+ 
+    if(!data.lrc){
+      data.has_lrc = false
+    } else {
+      // 有歌词
+      data.has_lrc = true
+      const lrcs = (data.lrc).split('\n')
+      // 如果歌词中
+      data.lrc_edit = false
+      const tlrcs = []
+      for(let item of lrcs) {
+        if(item.indexOf('[') >= 0){
+          if(item.indexOf('[0:0:0]') >= 0) {
+            data.lrc_edit = true
+          }
+          tlrcs.push(item)
+        }else{
+          data.lrc_edit = true
+          tlrcs.push(`[0:0:0]${item}`)
+        }
+      }
+      data.lrc = tlrcs.join('\n')
+    }
+
+    // 如果需要编辑 但是数据不需要编辑
+    if (data.lrc_edit && !m.lrc_edit) {
+      ctx.body = { 
+        code: 50000,
+        message: '歌词可能不是最新的，请刷新再试'
+      }
+      return
+    }
 
     await sequelize.transaction(t => {
       return (async ()=>{
         // 查询数据
-        const album = await Album.findOne({
+        const music = await Music.findOne({
           where: {
             id: id
           }
         },{transaction:t})
 
         // 判断id是否相同 如果不相同两个都要更新
-        if (data.album_id && album.id !== data.album_id) {
+        if (data.album_id && music.album_id !== data.album_id) {
           Album.increment('music_count',{
             by: 1,
             where: {
@@ -209,13 +354,20 @@ module.exports =  class MusicController {
           where: {
             id:id
           }
-        })
+        }, {transaction: t})
       })()
+    })
+
+    const music = await Music.findOne({
+      where: {
+        id: id
+      }
     })
 
     ctx.body = {
       code:20000,
-      message:'修改成功'
+      message:'修改成功',
+      data: music
     }
   }
 }
