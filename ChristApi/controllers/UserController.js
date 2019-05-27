@@ -40,4 +40,29 @@ module.exports =  class UserController {
       }
     }
   }
+
+
+  // 更新信息
+  static async update (ctx, next) {
+    const id =  ctx.params.id
+    const body =  ctx.request.body
+    await User.update(body,{
+      where: {
+        openid: id
+      }
+    })
+
+    const user = await User.findOne({
+      where: {
+        openid: id
+      }
+    })
+    ctx.body = {
+      code: 20000,
+      message: '成功',
+      data: {
+        edit_lrc: user.edit_lrc
+      }
+    }
+  }
 }

@@ -58,7 +58,8 @@ module.exports =  class AlbumController {
         exclude: ['is_delete']
       },
       where:{
-        is_delete: false
+        is_delete: false,
+        is_show: true
       },
       offset: ((page-1) * limit)+0,
       limit: parseInt(limit)

@@ -1,4 +1,5 @@
 const {Favorite, Sequelize}  = require('../models/Favorite')
+const { Music } = require('../models/Music')
 
 module.exports =  class FavriteController {
 
@@ -30,6 +31,22 @@ module.exports =  class FavriteController {
         is_delete: !status
       })
     }
+
+    const count = await Favorite.count({
+      where: {
+        music_id: music_id,
+        is_delete: false
+      }
+    })
+
+    // 累计
+    await Music.update({
+      support_count : count
+    }, {
+      where: {
+        id: music_id
+      }
+    })
 
     ctx.body = {
       code: 20000,

@@ -6,7 +6,6 @@ const Model = Sequelize.Model
 class User extends Model {
 
 }
-
 // 用户表
 User.init({
     id:{
@@ -31,13 +30,37 @@ User.init({
       type: Sequelize.STRING(11),
       comment: '手机号'
     },
+    avatarUrl: {
+      type: Sequelize.STRING,
+      comment: '头像'
+    },
+    city: {
+      type: Sequelize.STRING(50),
+      comment: '城市'
+    },
+    province: {
+      type: Sequelize.STRING(50),
+      comment: '省份'
+    },
+    country: {
+      type: Sequelize.STRING(50),
+      comment: '国家'
+    },
     name:{
       type: Sequelize.STRING(100),
-      comment:'姓名'
+      comment: '姓名'
+    },
+    nickName: {
+      type: Sequelize.STRING(50),
+      comment: '昵称'
     },
     gender: {
-      type: Sequelize.BOOLEAN,
+      type: Sequelize.TINYINT,
       comment: '性别'
+    },
+    language: {
+      type: Sequelize.STRING(30),
+      comment: '语言'
     },
     birth: {
       type: Sequelize.BIGINT,
@@ -52,6 +75,11 @@ User.init({
       type: Sequelize.STRING(20),
       allowNull:true,
       comment: 'qq'
+    },
+    edit_lrc: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: false,
+      comment: '编辑权限'
     },
     is_delete: {
       type: Sequelize.BOOLEAN,

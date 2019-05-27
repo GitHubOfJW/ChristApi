@@ -49,7 +49,7 @@ Music.init({
       comment: '所属专辑'
     },
     time: {
-      type: Sequelize.INTEGER,
+      type: Sequelize.DOUBLE,
       defaultValue: 0,
       comment: '时间毫秒值'
     },

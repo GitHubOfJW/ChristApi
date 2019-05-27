@@ -31,7 +31,7 @@ module.exports =  class MusicController {
   // 获取下一首播放的歌曲
   static async nextMusic(ctx, next) {
     // 1 单曲循环 2 列表循环
-    let { music_id, playType = 2 } =  ctx.query;
+    let { music_id, playType = 2, durtion = 0} =  ctx.query;
 
     if(music_id){
       const music = await Music.findOne({
@@ -39,11 +39,18 @@ module.exports =  class MusicController {
           id:music_id
         },
         include: [{
-          model: Favorite,
-          scope: {
-            is_delete: false
-          }
+          model: Favorite
         }]
+      })
+
+      // 累计
+      await Music.update({
+        time: durtion,
+        play_count: music.play_count + 1
+      }, {
+        where: {
+          id: music_id
+        }
       })
 
       if (playType == 1) {
@@ -60,15 +67,12 @@ module.exports =  class MusicController {
       let nextMusic =  await Music.findOne({
         where: {
           album_id: music.album_id,
-          id: {
-            [Sequelize.Op.gt]: music_id
+          num: {
+            [Sequelize.Op.gt]: music.num
           }
         },
         include: [{
-          model: Favorite,
-          scope: {
-            is_delete: false
-          }
+          model: Favorite
         }]
       })
 
@@ -79,10 +83,7 @@ module.exports =  class MusicController {
             album_id: music.album_id,
           },
           include: [{
-            model: Favorite,
-            scope: {
-              is_delete: false
-            }
+            model: Favorite
           }],
           limit:1
         })
@@ -102,6 +103,83 @@ module.exports =  class MusicController {
       data:{}
     }
   }
+
+  // 获取上一首播放的歌曲
+  static async prevMusic(ctx, next) {
+    // 1 单曲循环 2 列表循环
+    let { music_id, playType = 2, durtion = 0 } =  ctx.query;
+
+    if(music_id){
+      const music = await Music.findOne({
+        where: {
+          id:music_id
+        },
+        include: [{
+          model: Favorite
+        }]
+      })
+
+      // 累计
+      await Music.update({
+        time: durtion,
+        play_count: music.play_count + 1
+      }, {
+        where: {
+          id: music_id
+        }
+      })
+      
+      if (playType == 1) {
+        ctx.body = {
+          code: 20000,
+          message: '获取成功',
+          data: music
+        }
+        return
+      }
+
+      let prevMusic =  await Music.findOne({
+        where: {
+          album_id: music.album_id,
+          num: {
+            [Sequelize.Op.lt]: music.num
+          },
+          order:[[Sequelize.col('num'), "DESC"]],
+        },
+        include: [{
+          model: Favorite
+        }]
+      })
+
+      // 如果没有音乐
+      if ( !prevMusic) {
+        prevMusic =  await Music.findOne({
+          where: {
+            album_id: music.album_id,
+          },
+          include: [{
+            model: Favorite
+          }],
+          order:[[Sequelize.col('num'), "DESC"]],
+          limit:1
+        })
+      }
+
+      ctx.body = {
+        code: 20000,
+        message: '获取成功',
+        data: prevMusic
+      }
+      return
+    }
+
+    ctx.body = {
+      code: 50000,
+      message: '当前专辑已播放完',
+      data:{}
+    }
+  }
+  
   // 获取列表
   static async minilist(ctx, next){
     const { maxId =  -1, minId = -1, album_id, limit = 20 } = ctx.query

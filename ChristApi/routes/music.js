@@ -11,6 +11,7 @@ router.put('/edit/:id', controller.update)
 router.get('/mini/list',controller.minilist)
 router.get('/mini/favorites',controller.miniFavoriteList)
 router.get('/mini/next',controller.nextMusic)
+router.get('/mini/prev',controller.prevMusic)
 router.get('/mini/:id',controller.getById)
 router.put('/mini/edit/:id', controller.update)
 

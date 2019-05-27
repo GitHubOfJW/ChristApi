@@ -38,6 +38,11 @@ Album.init({
       allowNull: true,
       comment: '大图'
     },
+    is_show:{
+      type: Sequelize.BOOLEAN,
+      defaultValue: true,
+      comment: '是否显示'
+    },
     is_delete:{
       type: Sequelize.BOOLEAN,
       defaultValue: false,
