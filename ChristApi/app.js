@@ -13,8 +13,17 @@ const router = require('koa-router')()
 const path = require('path')
 const fs =  require('mz/fs')
 
-const { sessionConfig } = require('./config')
+const { sessionConfig, domain } = require('./config')
+const koaRequest = require('koa-http-request')
 
+// const enforceHttps = require('koa-sslify').default;
+
+// app.use(enforceHttps())
+
+app.use(koaRequest({
+  json:false,
+  timeout: 30000
+}))
 
 // middlewares
 app.use(bodyparser(
@@ -57,7 +66,7 @@ app.use(views(__dirname + '/views', {
 app.use(async (ctx,next)=>{
   //全局的G变量
   ctx.state.G={
-      url:'http://192.168.2.106:3000',
+      url: domain,
       prevPage:ctx.request.headers['referer']   /*上一页的地址*/
   }
   await next()
@@ -66,6 +75,9 @@ app.use(async (ctx,next)=>{
 // 授权
 const loadAuth = require('./middleware/login-auth')
 app.use(loadAuth())
+
+const checkAuth = require('./middleware/check-auth')
+app.use(checkAuth())
 
 // routes
 const files = fs.readdirSync('./routes')

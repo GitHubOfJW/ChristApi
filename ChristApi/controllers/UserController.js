@@ -8,8 +8,13 @@ module.exports =  class UserController {
   // 小程序登录
   static async minlogin (ctx, next) {
     const { code } = ctx.query
-    const res = await fetch(`https://api.weixin.qq.com/sns/jscode2session?appid=${appInfo.appid}&secret=${appInfo.secret}&js_code=${code}&grant_type=authorization_code`)
-    const json = await res.json()
+    const value = await ctx.get('https://api.weixin.qq.com/sns/jscode2session',{
+      appid: appInfo.appid,
+      secret: appInfo.secret,
+      grant_type: 'authorization_code',
+      js_code: code
+    })
+    const json = JSON.parse(value)
     let user = await User.findOne({
       where: {
         openid: json.openid

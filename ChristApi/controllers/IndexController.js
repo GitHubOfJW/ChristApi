@@ -1,8 +1,68 @@
 const { Member, Sequelize } = require('../models/Member')
+const { RoleRuleRel } = require('../models/permission/RoleRuleRel')
+const { Rule } = require('../models/permission/Rule')
 const path =  require('path')
 const { Album }  = require('../models/Album')
 
 module.exports = class IndexController {
+
+  // 检查权限
+  static async checkAuth(ctx, next){
+    // 获取当前账号
+    const member = await Member.findOne({
+      where: {
+        id: ctx.session.id
+      }
+    })
+    // 如果是超级管理员，直接返回可以
+    if (member.is_admin) {
+      ctx.body = {
+        code: 20000,
+        message: '成功',
+        data: {
+          auth: true
+        }
+      }
+      return
+    }
+    // 具体判断
+    const queryIndex = ctx.url.indexOf('?')
+    const path = ctx.url.substring(0, queryIndex >= 0 ? queryIndex -1 : ctx.url.length - 1)
+    // 查询有没有这个规则
+    const rule = await Rule.findOne({
+      where: {
+        path: path
+      }
+    })
+    // 如果没有
+    if (!rule) {
+      ctx.body = {
+        code: 20000,
+        message: '成功',
+        data: {
+          auth: true
+        }
+      }
+      return
+    }
+
+    // 如果有规则
+    const rel = await RoleRuleRel.findOne({
+      where: {
+        rule_id: rule.id,
+        role_id: member.role_id,
+        is_delete: false
+      }
+    })
+
+    ctx.body = {
+      code: 20000,
+      message: '成功',
+      data: {
+        auth: !!rel
+      }
+    }
+  }
  
   // 上传照片
   static async upload(ctx, next){
@@ -18,22 +78,22 @@ module.exports = class IndexController {
     }
   }
 
-  static getTopMenus() {
+  static getTopMenus(ctx) {
     const data = [{
-      imgSrc: 'http://192.168.2.106:3000/images/qrcode.png',
+      imgSrc: ctx.state.G.url + '/images/qrcode.png',
       title: '扫码分享',
-      type: 0,
+      type: 'wxacode',
       content: ''
     },{
-      imgSrc: 'http://192.168.2.106:3000/images/awared.png',
+      imgSrc:  ctx.state.G.url + '/images/awared.png',
       title: '打赏声明',
-      type: 1,
-      content: ''
+      type: 'prompt',
+      content: '本人也是一名基督徒，为了给各位弟兄姊妹提供方便，利用业余时间开发了这款程序，由于本程序也花费了不少精力和一些成本，如果帮到了您，希望您能给点打赏！'
     },{
-      imgSrc: 'http://192.168.2.106:3000/images/mzsm.png',
+      imgSrc: ctx.state.G.url + '/images/mzsm.png',
       title: '免责声明',
-      type: 2,
-      content: ''
+      type: 'prompt',
+      content: '本程序中的许多资源都是来自网络，如若侵犯了您的版权，还请通知下线，本程序中的任何资源不做任何商业用途！'
     }]
     return data
   }
@@ -53,7 +113,7 @@ module.exports = class IndexController {
       message: "成功",
       data: {
         albums,
-        menus: IndexController.getTopMenus()
+        menus: IndexController.getTopMenus(ctx)
       }
     }
   }

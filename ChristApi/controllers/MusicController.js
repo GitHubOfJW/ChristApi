@@ -71,6 +71,7 @@ module.exports =  class MusicController {
             [Sequelize.Op.gt]: music.num
           }
         },
+        order:[[Sequelize.col('num'), "ASC"]],
         include: [{
           model: Favorite
         }]
@@ -269,12 +270,12 @@ module.exports =  class MusicController {
     const limit = ctx.query.limit || 20
     //  查询
     const data = await Music.findAndCountAll({
-      attributes:{
-        exclude: ['is_delete']
-      },
-      where:{
-        is_delete: false
-      },
+      // attributes:{
+      //   exclude: ['is_delete']
+      // },
+      // where:{
+      //   is_delete: false
+      // },
       offset: ((page-1) * limit)+0,
       limit: parseInt(limit)
     })
@@ -393,13 +394,13 @@ module.exports =  class MusicController {
     }
 
     // 如果需要编辑 但是数据不需要编辑
-    if (data.lrc_edit && !m.lrc_edit) {
-      ctx.body = { 
-        code: 50000,
-        message: '歌词可能不是最新的，请刷新再试'
-      }
-      return
-    }
+    // if (data.lrc_edit && !m.lrc_edit) {
+    //   ctx.body = { 
+    //     code: 50000,
+    //     message: '歌词可能不是最新的，请刷新再试'
+    //   }
+    //   return
+    // }
 
     await sequelize.transaction(t => {
       return (async ()=>{
@@ -447,5 +448,39 @@ module.exports =  class MusicController {
       message:'修改成功',
       data: music
     }
+  }
+
+  // 删除
+  static async delete(ctx, next) {
+    const id = ctx.params.id
+    await Music.update({
+      is_delete: true
+    }, {
+      where: {
+        id: id
+      }
+    })
+
+    ctx.body = {
+      code: 20000,
+      message: '删除成功'
+    }    
+  }
+
+  // 恢复
+  static async recover(ctx, next) {
+    const id = ctx.params.id
+    await Music.update({
+      is_delete: false
+    }, {
+      where: {
+        id: id
+      }
+    })
+
+    ctx.body = {
+      code: 20000,
+      message: '恢复成功'
+    }    
   }
 }

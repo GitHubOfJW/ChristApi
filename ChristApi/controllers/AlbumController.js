@@ -30,9 +30,9 @@ module.exports =  class AlbumController {
   static async getAlbums(ctx, next){
     //  查询
     const data = await Album.findAndCountAll({
-      attributes:{
-        exclude: ['is_delete']
-      },
+      // attributes:{
+      //   exclude: ['is_delete']
+      // },
       where:{
         is_delete: false
       }
@@ -54,11 +54,11 @@ module.exports =  class AlbumController {
     const limit = ctx.query.limit || 20
     //  查询
     const data = await Album.findAndCountAll({
-      attributes:{
-        exclude: ['is_delete']
-      },
+      // attributes:{
+      //   exclude: ['is_delete']
+      // },
       where:{
-        is_delete: false,
+        // is_delete: false,
         is_show: true
       },
       offset: ((page-1) * limit)+0,
@@ -112,6 +112,40 @@ module.exports =  class AlbumController {
     ctx.body = {
       code:20000,
       message:'修改成功'
+    }
+  }
+
+  // 删除
+  static async delete(ctx, next) {
+    const id = ctx.params.id
+    await Album.update({
+      is_delete: true
+    }, {
+      where: {
+        id: id
+      }
+    })
+
+    ctx.body = {
+      code: 20000,
+      message: '删除成功'
+    }
+  }
+
+  // 删除
+  static async recover(ctx, next) {
+    const id = ctx.params.id
+    await Album.update({
+      is_delete: false
+    }, {
+      where: {
+        id: id
+      }
+    })
+
+    ctx.body = {
+      code: 20000,
+      message: '恢复成功'
     }
   }
 }

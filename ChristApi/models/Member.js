@@ -78,8 +78,8 @@ Member.init({
 })
 
 // 创建
-Member.sync({ force: force }).then(result=>{
-  if(force){
+Member.sync({ force: force }).then(async result=>{
+  if((await Member.count()) <= 0){
     Member.create({
       mobile:'13311255165',
       name:'朱建伟',

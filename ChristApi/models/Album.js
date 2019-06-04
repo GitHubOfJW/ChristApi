@@ -28,7 +28,7 @@ Album.init({
       defaultValue: 0,
       comment: '专辑内音乐数'
     },
-    tumb_url: {
+    thumb_url: {
       type: Sequelize.STRING(100),
       allowNull: true,
       comment: '缩略图'

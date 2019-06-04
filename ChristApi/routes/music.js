@@ -14,5 +14,7 @@ router.get('/mini/next',controller.nextMusic)
 router.get('/mini/prev',controller.prevMusic)
 router.get('/mini/:id',controller.getById)
 router.put('/mini/edit/:id', controller.update)
+router.delete('/delete/:id', controller.delete)
+router.put('/recover/:id', controller.recover)
 
 module.exports = router

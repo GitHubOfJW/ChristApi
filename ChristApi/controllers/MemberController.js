@@ -133,10 +133,10 @@ module.exports =  class MemberController {
     //  查询
     const data = await Member.findAndCountAll({
       attributes:{
-        exclude: ['password','is_delete']
+        exclude: ['password']
       },
       where:{
-        is_delete: false,
+        // is_delete: false,
         mobile: {
           [Sequelize.Op.like]: `${ mobile }%`,
         },
@@ -196,7 +196,7 @@ module.exports =  class MemberController {
     delete data.role_key
     delete data.token
     delete data.avatar
-    const id = data.id
+    const id = ctx.params.id
     delete data.id
 
     data.updatedAt = new Date()
@@ -209,6 +209,59 @@ module.exports =  class MemberController {
     ctx.body = {
       code:20000,
       message:'修改成功'
+    }
+  }
+
+  // 删除
+  static async delete(ctx, next) {
+    const id = ctx.params.id
+    const member = await Member.findOne({
+      where: {
+        id: ctx.session.id
+      }
+    })
+    if (member.is_admin) {
+      ctx.body = {
+        code: 50000,
+        message: '超级管理员不可删除'
+      }
+    } else {
+      await Member.update({
+        is_delete: true
+      },{
+        where: {
+          id: id
+        }
+      })
+
+      ctx.body = {
+        code: 20000,
+        message: '删除成功'
+      }
+    }
+  }
+
+
+  // 删除
+  static async recover(ctx, next) {
+    const id = ctx.params.id
+    const member = await Member.findOne({
+      where: {
+        id: ctx.session.id
+      }
+    })
+    
+    await Member.update({
+      is_delete: false
+    },{
+      where: {
+        id: id
+      }
+    })
+
+    ctx.body = {
+      code: 20000,
+      message: '恢复成功'
     }
   }
 }

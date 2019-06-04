@@ -1,14 +1,14 @@
 // 数据库连接
-const { Sequelize,sequelize,force} = require('../utils/dbConnect')
+const { Sequelize,sequelize,force} = require('../../utils/dbConnect')
 
 const Model = Sequelize.Model
 
-class Role extends Model {
+class RoleRuleRel extends Model {
 
 }
 
 // 角色关系
-Role.init({
+RoleRuleRel.init({
     id:{
       type: Sequelize.INTEGER,
       primaryKey:true,
@@ -35,6 +35,6 @@ Role.init({
 })
 
 // 创建
-Role.sync({ force: force })
+RoleRuleRel.sync({ force: force })
 
-module.exports = {Role,Sequelize,sequelize}
+module.exports = {RoleRuleRel,Sequelize,sequelize}
