@@ -1,4 +1,5 @@
 const {Album, Sequelize}  = require('../models/Album')
+const { removeFileFlag, addFileFlag } = require('../utils/fileTool')
 
 module.exports =  class AlbumController {
 
@@ -58,8 +59,8 @@ module.exports =  class AlbumController {
       //   exclude: ['is_delete']
       // },
       where:{
-        // is_delete: false,
-        is_show: true
+        is_delete: false,
+        // is_show: true
       },
       offset: ((page-1) * limit)+0,
       limit: parseInt(limit)
@@ -81,9 +82,20 @@ module.exports =  class AlbumController {
     delete data.id
     
     // 创建
+    removeFileFlag(data.thumb_url)
+    removeFileFlag(data.big_url)
+
+    if (data.thumb_url) {
+      data.thumb_url = data.thumb_url.substr(data.thumb_url.indexOf('/upload')).replace('_n', '')
+    }
+    if (data.big_url) {
+      data.big_url = data.big_url.substr(data.big_url.indexOf('/upload')).replace('_n', '')
+    }
+
     const result = await Album.create({
       ...data
     })
+
 
     ctx.body = {
       code:20000,
@@ -103,6 +115,29 @@ module.exports =  class AlbumController {
     delete data.id
 
     data.updatedAt = new Date()
+
+    const oldAlbum = await Album.findOne({
+      where: {
+        id: id
+      }
+    });
+    // 如果图不一样了，那么就加回标记
+    if (oldAlbum.thumb_url !== data.thumb_url) {
+      addFileFlag(oldAlbum.thumb_url)
+    }
+    if (oldAlbum.big_url !== data.big_url) {
+      addFileFlag(oldAlbum.big_url)
+    }
+    
+
+    if (data.thumb_url) {
+      removeFileFlag(data.thumb_url)
+      data.thumb_url = data.thumb_url.substr(data.thumb_url.indexOf('/upload')).replace('_n', '')
+    }
+    if (data.big_url) {
+      removeFileFlag(data.big_url)
+      data.big_url = data.big_url.substr(data.big_url.indexOf('/upload')).replace('_n', '')
+    }
     // 修改数据
     await Album.update(data,{
       where: {

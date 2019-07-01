@@ -1,6 +1,7 @@
 const {Music, Sequelize}  = require('../models/Music')
 const {Album, sequelize} = require('../models/Album')
 const {Favorite} = require('../models/Favorite')
+const {removeFileFlag,addFileFlag } = require('../utils/fileTool')
 
 Music.hasOne(Favorite,{
   foreignKey: 'music_id',
@@ -318,6 +319,19 @@ module.exports =  class MusicController {
       data.lrc = tlrcs.join('\n')
     }
     
+    removeFileFlag(data.thumb_url)
+    removeFileFlag(data.source_url)
+    removeFileFlag(data.big_url)
+
+    if (data.thumb_url) {
+      data.thumb_url = data.thumb_url.substr(data.thumb_url.indexOf('/upload')).replace('_n', '')
+    }
+    if (data.big_url) {
+      data.big_url = data.big_url.substr(data.big_url.indexOf('/upload')).replace('_n', '')
+    }
+    if (data.source_url) {
+      data.source_url = data.source_url.substr(data.source_url.indexOf('/upload')).replace('_n', '')
+    }
 
     
     const result = await sequelize.transaction(t => {
@@ -362,7 +376,7 @@ module.exports =  class MusicController {
     const id = ctx.params.id
     delete data.id
 
-    const m = await Music.findOne({
+    const oldMusic = await Music.findOne({
       where: {
         id: id
       }
@@ -392,27 +406,37 @@ module.exports =  class MusicController {
       }
       data.lrc = tlrcs.join('\n')
     }
+    
+    // 如果图不一样了，那么就加回标记
+    if (oldMusic.thumb_url !== data.thumb_url) {
+      addFileFlag(oldMusic.thumb_url)
+    }
+    if (oldMusic.big_url !== data.big_url) {
+      addFileFlag(oldMusic.big_url)
+    }
+    if (oldMusic.source_url !== data.source_url) {
+      addFileFlag(oldMusic.source_url)
+    }
+    
 
-    // 如果需要编辑 但是数据不需要编辑
-    // if (data.lrc_edit && !m.lrc_edit) {
-    //   ctx.body = { 
-    //     code: 50000,
-    //     message: '歌词可能不是最新的，请刷新再试'
-    //   }
-    //   return
-    // }
+    if (data.thumb_url) {
+      removeFileFlag(data.thumb_url)
+      data.thumb_url = data.thumb_url.substr(data.thumb_url.indexOf('/upload')).replace('_n', '')
+    }
+    if (data.big_url) {
+      removeFileFlag(data.big_url)
+      data.big_url = data.big_url.substr(data.big_url.indexOf('/upload')).replace('_n', '')
+    }
+    if (data.source_url) {
+      removeFileFlag(data.source_url)
+      data.source_url = data.source_url.substr(data.source_url.indexOf('/upload')).replace('_n', '')
+    }
 
     await sequelize.transaction(t => {
       return (async ()=>{
-        // 查询数据
-        const music = await Music.findOne({
-          where: {
-            id: id
-          }
-        },{transaction:t})
-
+        
         // 判断id是否相同 如果不相同两个都要更新
-        if (data.album_id && music.album_id !== data.album_id) {
+        if (data.album_id && oldMusic.album_id !== data.album_id) {
           Album.increment('music_count',{
             by: 1,
             where: {

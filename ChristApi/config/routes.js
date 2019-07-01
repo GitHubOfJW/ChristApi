@@ -55,7 +55,8 @@ const constantRoutes = [
         name: 'Documentation',
         meta: { title: 'documentation', icon: 'documentation', affix: true }
       }
-    ]
+    ],
+    hidden: true
   },
   {
     path: '/guide',
@@ -68,7 +69,8 @@ const constantRoutes = [
         name: 'Guide',
         meta: { title: 'guide', icon: 'guide', noCache: true }
       }
-    ]
+    ],
+    hidden: true
   }
 ]
 
@@ -80,8 +82,7 @@ const asyncRoutes = [
     alwaysShow: true,
     meta: {
       title: 'permission',
-      icon: 'lock',
-      roles: ['admin', 'editor']
+      icon: 'lock'
     },
     children: [ 
       {
@@ -89,8 +90,7 @@ const asyncRoutes = [
         component: 'views/permission/member',
         name: 'Members',
         meta: {
-          title: 'members',
-          roles: ['admin'] // or you can only set roles in sub nav
+          title: 'members'
         }
       },
       {
@@ -98,8 +98,7 @@ const asyncRoutes = [
         component: 'views/permission/rule',
         name: 'Rules',
         meta: {
-          title: 'rules',
-          roles: ['admin'] // or you can only set roles in sub nav
+          title: 'rules'
         }
       },
       {
@@ -107,8 +106,7 @@ const asyncRoutes = [
         component: 'views/permission/page',
         name: 'PagePermission',
         meta: {
-          title: 'pagePermission',
-          roles: ['admin']
+          title: 'pagePermission'
         }
       },
       {
@@ -124,13 +122,40 @@ const asyncRoutes = [
         component: 'views/permission/role',
         name: 'RolePermission',
         meta: {
-          title: 'rolePermission',
-          roles: ['admin']
+          title: 'rolePermission'
         }
       }
     ]
   },
-
+  {
+    path: '/music',
+    component: 'layout/Layout',
+    redirect: '/music/page',
+    alwaysShow: true, // will always show the root menu
+    name: 'Music',
+    meta: {
+      title: 'music',
+      icon: 'list'
+    },
+    children: [
+      {
+        path: 'album',
+        component: 'views/music/album',
+        name: 'Album',
+        meta: {
+          title: 'album'
+        }
+      },
+      {
+        path: 'music',
+        component: 'views/music/music',
+        name: 'Music',
+        meta: {
+          title: 'music'
+        }
+      }
+    ]
+  },
   {
     path: '/icon',
     component: 'layout/Layout',

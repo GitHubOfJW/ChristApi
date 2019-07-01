@@ -53,7 +53,7 @@ if (isProduction) {
         idle:1000
       },
     },
-    domain: 'http://192.168.2.108:3000',
+    domain: 'http://192.168.2.102:3000',
     appInfo: {
       appid: 'wx92589ad7fbbc7bf7',
       secret: '675e8227c7566500d8736e8fb084d993'

@@ -38,8 +38,12 @@ Role.init({
         }
       },
       get(){
-        const data = this.getDataValue('routes')
-        return JSON.parse(data)
+        try {
+          const data = this.getDataValue('routes') || {}
+          return JSON.parse(data)  
+        } catch (error) {
+          return {}
+        }
       }
     },
     is_delete:{

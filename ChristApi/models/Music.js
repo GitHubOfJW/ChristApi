@@ -1,5 +1,6 @@
 // 数据库连接
 const { Sequelize,sequelize,force} = require('../utils/dbConnect')
+const { domain } = require('../config')
 
 const Model = Sequelize.Model
 
@@ -29,19 +30,40 @@ Music.init({
       allowNull: true,
       comment: '描述'
     },
-    tumb_url: {
+    thumb_url: {
       type: Sequelize.STRING(100),
       allowNull: true,
+      get() {
+        const value = this.getDataValue('thumb_url')
+        if (!value) {
+          return
+        }
+        return domain + value
+      },
       comment: '缩略图'
     },
     big_url:{
       type: Sequelize.STRING(100),
       allowNull: true,
+      get() {
+        const value = this.getDataValue('big_url')
+        if (!value) {
+          return
+        }
+        return domain + value
+      },
       comment: '大图'
     },
     source_url: {
       type: Sequelize.STRING(100),
       allowNull: true,
+      get() {
+        const value = this.getDataValue('source_url')
+        if (!value) {
+          return ''
+        }
+        return domain + value
+      },
       comment: '资源地址'
     },
     album_id: {

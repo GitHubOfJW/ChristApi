@@ -3,6 +3,10 @@ const { RoleRuleRel } = require('../models/permission/RoleRuleRel')
 const { Rule } = require('../models/permission/Rule')
 const path =  require('path')
 const { Album }  = require('../models/Album')
+const { Music } = require('../models/Music')
+const { miniTopMenu } = require('../config/meta')
+const uuidv4 = require('uuid/v4')
+const fs = require('fs')
 
 module.exports = class IndexController {
 
@@ -77,26 +81,7 @@ module.exports = class IndexController {
       }
     }
   }
-
-  static getTopMenus(ctx) {
-    const data = [{
-      imgSrc: ctx.state.G.url + '/images/qrcode.png',
-      title: '扫码分享',
-      type: 'wxacode',
-      content: ''
-    },{
-      imgSrc:  ctx.state.G.url + '/images/awared.png',
-      title: '打赏声明',
-      type: 'prompt',
-      content: '本人也是一名基督徒，为了给各位弟兄姊妹提供方便，利用业余时间开发了这款程序，由于本程序也花费了不少精力和一些成本，如果帮到了您，希望您能给点打赏！'
-    },{
-      imgSrc: ctx.state.G.url + '/images/mzsm.png',
-      title: '免责声明',
-      type: 'prompt',
-      content: '本程序中的许多资源都是来自网络，如若侵犯了您的版权，还请通知下线，本程序中的任何资源不做任何商业用途！'
-    }]
-    return data
-  }
+ 
 
   static async miniIndex(ctx, next) {
     const { page = 1 } = ctx.request.body
@@ -113,8 +98,43 @@ module.exports = class IndexController {
       message: "成功",
       data: {
         albums,
-        menus: IndexController.getTopMenus(ctx)
+        menus: miniTopMenu
       }
+    }
+  }
+
+  // 初始化项目
+  static async initMusic(ctx, next){
+    // 专辑编号
+    const album_id = ctx.params.id
+    // 新编赞美诗
+    if (album_id === 1) {
+      // 生成文件目录
+      const musics = await Music.findAll({
+        where: {
+          album_id:album_id
+        }
+      })
+      
+      // 遍历改名
+      for(let music of musics) {
+        const name = uuidv4()
+        const source_url = music.source_url.substring(music.source_url.indexOf('/upload'))
+        const oldPath = path.join(__dirname,'../public/',source_url)
+        const new_source_url = source_url.substring(0,source_url.lastIndexOf('/')+1) + name + source_url.substring(source_url.indexOf('.'))
+        const newPath = path.join(__dirname,'../public/',new_source_url)
+        fs.renameSync(oldPath,newPath)
+        await Music.update({
+          source_url:new_source_url
+        },{
+          where:{
+            id: music.id
+          }
+        })
+      }
+    }
+    ctx.body = {
+      'mess':'成啦'
     }
   }
 }

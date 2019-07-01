@@ -4,19 +4,28 @@ const md5 =  require('md5')
 const uuidv4 =  require('uuid/v4')
 
 Rule.belongsTo(Rule,{ as:'father', foreignKey: 'parent_id', constraints: false})
+Rule.hasMany(Rule, {as:'rules', foreignKey: 'parent_id', constraints: false})
 
 module.exports =  class RuleController {
   
   // 获取根分类
   static async ruleCate(ctx, next){
-    const data = await Rule.findAndCountAll({
+    const condition = {
       attributes: {
         exclude: ['path', 'parent_id']
       },
       where: {
         parent_id: 0
       }
-    })
+    }
+    const { children = false } = ctx.query || {}
+    if (children) {
+      condition.include = [{
+        model: Rule,
+        as: 'rules'
+      }]
+    }
+    const data = await Rule.findAndCountAll(condition)
 
     ctx.body = {
       code: 20000,
@@ -32,15 +41,15 @@ module.exports =  class RuleController {
   static async list(ctx, next){
     const page = ctx.query.page || 1
     const limit = ctx.query.limit || 20
-    const  { name = '', path = '', parent_id = 0, sort = '+sort' } = ctx.query
-    const orders = sort.split(',')
+    const  { name = '', path = '', parent_id = 0, sort = '+sort,-parent_id' } = ctx.query
+    const orders = (sort+',+parent_id').split(',')
     const orderby = []
     for(let sortItem of orders){
        orderby.push([Sequelize.col(sortItem.substring(1)),sortItem.startsWith('+') ? 'ASC':'DESC'])
     }
 
     const where = {
-      is_delete: false,
+      // is_delete: false,
       name: {
         [Sequelize.Op.like]: `%${ name }%`,
       },
@@ -59,9 +68,9 @@ module.exports =  class RuleController {
 
     //  查询
     const data = await Rule.findAndCountAll({
-      attributes:{
-        exclude: ['is_delete']
-      },
+      // attributes:{
+      //   exclude: ['is_delete']
+      // },
       include: [
         {
           model: Rule,
@@ -157,6 +166,40 @@ module.exports =  class RuleController {
     ctx.body = {
       code:20000,
       message:'修改成功'
+    }
+  }
+
+  // 删除
+  static async delete(ctx, next) {
+    const id = ctx.params.id
+    await Rule.update({
+      is_delete: true
+    }, {
+      where: {
+        id: id
+      }
+    })
+
+    ctx.body = {
+      code: 20000,
+      message: '删除成功'
+    }
+  }
+
+  // 删除
+  static async recover(ctx, next) {
+    const id = ctx.params.id
+    await Rule.update({
+      is_delete: false
+    }, {
+      where: {
+        id: id
+      }
+    })
+
+    ctx.body = {
+      code: 20000,
+      message: '恢复成功'
     }
   }
 }

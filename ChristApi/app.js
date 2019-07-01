@@ -20,6 +20,11 @@ const koaRequest = require('koa-http-request')
 
 // app.use(enforceHttps())
 
+// cors
+app.use(cors({
+  origin:'*'
+}))
+
 app.use(koaRequest({
   json:false,
   timeout: 30000
@@ -42,8 +47,7 @@ app.use(json())
 
 //  jsonp
 app.use(jsonp())
-// cors
-app.use(cors())
+
 // static
 app.use(require('koa-static')(__dirname + '/public'))
 
