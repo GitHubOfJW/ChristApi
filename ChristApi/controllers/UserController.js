@@ -15,6 +15,14 @@ module.exports =  class UserController {
       js_code: code
     })
     const json = JSON.parse(value)
+    if(!json.openid) {
+      ctx.body = {
+        code: 5000,
+        message: '未获取到openid',
+        data: json
+      }
+      return
+    }
     let user = await User.findOne({
       where: {
         openid: json.openid
@@ -56,7 +64,7 @@ module.exports =  class UserController {
         openid: id
       }
     })
-
+    
     const user = await User.findOne({
       where: {
         openid: id
@@ -66,7 +74,7 @@ module.exports =  class UserController {
       code: 20000,
       message: '成功',
       data: {
-        edit_lrc: user.edit_lrc
+        edit_lrc: user ? user.edit_lrc : false
       }
     }
   }

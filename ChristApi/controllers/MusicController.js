@@ -38,10 +38,7 @@ module.exports =  class MusicController {
       const music = await Music.findOne({
         where: {
           id:music_id
-        },
-        include: [{
-          model: Favorite
-        }]
+        }
       })
 
       // 累计
@@ -115,10 +112,7 @@ module.exports =  class MusicController {
       const music = await Music.findOne({
         where: {
           id:music_id
-        },
-        include: [{
-          model: Favorite
-        }]
+        }
       })
 
       // 累计
@@ -145,9 +139,9 @@ module.exports =  class MusicController {
           album_id: music.album_id,
           num: {
             [Sequelize.Op.lt]: music.num
-          },
-          order:[[Sequelize.col('num'), "DESC"]],
+          }
         },
+        order:[[Sequelize.col('num'), 'DESC']],
         include: [{
           model: Favorite
         }]
@@ -162,7 +156,7 @@ module.exports =  class MusicController {
           include: [{
             model: Favorite
           }],
-          order:[[Sequelize.col('num'), "DESC"]],
+          order:[[Sequelize.col('num'), 'DESC']],
           limit:1
         })
       }
@@ -193,13 +187,15 @@ module.exports =  class MusicController {
     if(album_id) {
       where.album_id =  album_id
     }
-
+    const order = []
     if(maxId != -1) {
-      where.id = {
+      order.push([Sequelize.col('num'), "ASC"])
+      where.num = {
         [Sequelize.Op.gt]: maxId
       }
     }else if(minId != -1){
-      where.id = {
+      order.push([Sequelize.col('num'), "DESC"])
+      where.num = {
         [Sequelize.Op.lt]: minId
       }
     }
@@ -210,7 +206,7 @@ module.exports =  class MusicController {
       },
       where: where,
       limit: parseInt(limit),
-      order:[[Sequelize.col('num'), "ASC"]],
+      order: order,
       include: [{
         model: Favorite,
       }]
@@ -269,14 +265,20 @@ module.exports =  class MusicController {
   static async list(ctx, next){
     const page = ctx.query.page || 1
     const limit = ctx.query.limit || 20
+    const album_id =  ctx.query.album_id || 0
+    const where = {
+      is_delete: false
+    }
+    if(album_id != 0){
+      where.album_id = album_id
+    }
+
     //  查询
     const data = await Music.findAndCountAll({
-      // attributes:{
-      //   exclude: ['is_delete']
-      // },
-      // where:{
-      //   is_delete: false
-      // },
+      attributes:{
+        exclude: ['lrc']
+      },
+      where: where,
       offset: ((page-1) * limit)+0,
       limit: parseInt(limit)
     })

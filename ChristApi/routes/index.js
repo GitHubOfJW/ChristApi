@@ -14,4 +14,7 @@ router.post('/upload/music', upload.single('file'), Index.upload)
 router.get('/mini/index', Index.miniIndex)
 // 常见问题
 router.get('/mini/questions', Question.list)
+// 获取二维码
+router.post('/mini/getcode',Index.miniCode)
+router.get('/mini/getAccToken', Index.miniAccToken)
 module.exports = router

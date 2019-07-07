@@ -5,9 +5,10 @@ const path =  require('path')
 const { Album }  = require('../models/Album')
 const { Music } = require('../models/Music')
 const { miniTopMenu } = require('../config/meta')
+const { appInfo } = require('../config')
 const uuidv4 = require('uuid/v4')
 const fs = require('fs')
-
+const fetch  = require('node-fetch')
 module.exports = class IndexController {
 
   // 检查权限
@@ -108,33 +109,66 @@ module.exports = class IndexController {
     // 专辑编号
     const album_id = ctx.params.id
     // 新编赞美诗
-    if (album_id === 1) {
-      // 生成文件目录
-      const musics = await Music.findAll({
-        where: {
-          album_id:album_id
-        }
-      })
-      
-      // 遍历改名
-      for(let music of musics) {
-        const name = uuidv4()
-        const source_url = music.source_url.substring(music.source_url.indexOf('/upload'))
-        const oldPath = path.join(__dirname,'../public/',source_url)
-        const new_source_url = source_url.substring(0,source_url.lastIndexOf('/')+1) + name + source_url.substring(source_url.indexOf('.'))
-        const newPath = path.join(__dirname,'../public/',new_source_url)
-        fs.renameSync(oldPath,newPath)
-        await Music.update({
-          source_url:new_source_url
-        },{
-          where:{
-            id: music.id
-          }
-        })
-      }
+    const data = []
+    if (album_id == 2) {
+       for(let i = 1 ; i <= 1224; i++) {
+         const subDirBegin = '0'.repeat(4 - `${parseInt((i+50)/50)*50-49}`.length) + (parseInt((i+50)/50)*50 - 49)
+         let subDirEnd = '0'.repeat(4 - `${parseInt((i+50)/50)*50}`.length) + (parseInt((i+50)/50)*50)
+         const temp = parseInt(1224/50)*50
+         if(i>= temp) {
+            subDirEnd = '0'.repeat(4 - `${1224}`.length) + 1224
+         }
+         const file = '0'.repeat(4 - `${i}`.length) + i
+         data.push({
+           name:`歌曲${i}`,
+           num: i,
+           author: '未知',
+           album_id:2,
+           source_url: `/upload/2019070120/${subDirBegin}-${subDirEnd}/${file}.mp3`
+         })
+       }
+       await Music.bulkCreate(data)
     }
     ctx.body = {
-      'mess':'成啦'
+      'mess':data
     }
+  }
+
+  // 获取二维码
+  static async miniCode(ctx, next) {
+    const { accessToken,scene = 'none' } = ctx.request.body 
+    const body = {
+      access_token: accessToken,
+      scene: scene
+    }
+
+    const res = await fetch('https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=' + accessToken, {
+        method: 'post',
+        body: JSON.stringify(body),
+        headers: { 'Content-Type': 'application/json' },
+    })
+    console.log('就是看看',res.body,'看看啊')
+    // const data = JSON.parse(res)
+
+
+    ctx.body = {
+      code: 20000,
+      message: '成功',
+      data: res
+    }
+  }
+
+  static async miniAccToken (ctx, next) {
+    //?grant_type=client_credential&appid=' + appInfo.appid + '&secret=' + appInfo.secret
+    const data = await ctx.get('https://api.weixin.qq.com/cgi-bin/token',{
+      'grant_type':'client_credential',
+      'appid': appInfo.appid,
+      'secret': appInfo.secret
+    })
+    ctx.body = {
+      code: 20000,
+      data: data
+    }
+
   }
 }

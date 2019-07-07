@@ -1,4 +1,4 @@
-const isProduction = false
+const isProduction = true
 if (isProduction) {
   module.exports = {
     sessionConfig:{
@@ -26,7 +26,7 @@ if (isProduction) {
     domain: 'https://api.banbeigeng.com',
     appInfo: {
       appid: 'wx92589ad7fbbc7bf7',
-      secret: '675e8227c7566500d8736e8fb084d993'
+      secret: 'bad0bd6ede08bb06e56e998f90d84fa0'
     }
   }
 } else  {
@@ -56,7 +56,7 @@ if (isProduction) {
     domain: 'http://192.168.2.102:3000',
     appInfo: {
       appid: 'wx92589ad7fbbc7bf7',
-      secret: '675e8227c7566500d8736e8fb084d993'
+      secret: 'bad0bd6ede08bb06e56e998f90d84fa0'
     }
   }
 }
