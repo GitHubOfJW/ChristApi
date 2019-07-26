@@ -1,25 +1,23 @@
 const fetch =  require('node-fetch')
-const bluebird =  require('bluebird')
-fetch.Promise = bluebird
 const { appInfo } = require('../config')
 const { User, Sequelize } = require('../models/User')
 
 module.exports =  class UserController {
   // 小程序登录
   static async minlogin (ctx, next) {
-    const { code } = ctx.query
-    const value = await ctx.get('https://api.weixin.qq.com/sns/jscode2session',{
-      appid: appInfo.appid,
-      secret: appInfo.secret,
-      grant_type: 'authorization_code',
-      js_code: code
+    const { code } = ctx.query    
+    const data = await ctx.get('https://api.weixin.qq.com/sns/jscode2session',
+    {
+      'appid': appInfo.appid,
+      'secret': appInfo.secret,
+      'js_code': code,
+      'grant_type':'authorization_code'
     })
-    const json = JSON.parse(value)
+    const json = JSON.parse(data)
     if(!json.openid) {
       ctx.body = {
         code: 5000,
-        message: '未获取到openid',
-        data: json
+        message: '未获取到openid'
       }
       return
     }
@@ -44,7 +42,6 @@ module.exports =  class UserController {
         }
       })
     }
-
     ctx.body = {
       code:20000,
       message:'成功',

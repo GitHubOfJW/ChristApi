@@ -4,7 +4,7 @@ const { Rule } = require('../models/permission/Rule')
 const path =  require('path')
 const { Album }  = require('../models/Album')
 const { Music } = require('../models/Music')
-const { miniTopMenu } = require('../config/meta')
+const { miniTopMenu } = require('../configs/meta')
 const { appInfo } = require('../config')
 const uuidv4 = require('uuid/v4')
 const fs = require('fs')
@@ -170,5 +170,15 @@ module.exports = class IndexController {
       data: data
     }
 
+  }
+
+  static async streamFile (ctx, next) {
+    const file = ctx.params.file
+
+    // fs.createReadStream(`${__dirname}/../../index.js`);
+    ctx.body = {
+      code: 20000,
+      message: '成功'
+    }
   }
 }

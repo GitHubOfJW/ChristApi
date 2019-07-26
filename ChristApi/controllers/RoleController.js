@@ -24,7 +24,7 @@ module.exports =  class RoleController {
    
   // 获取路由
   static async routes(ctx, next){
-    const { constantRoutes, asyncRoutes } = require('../config/routes')
+    const { constantRoutes, asyncRoutes } = require('../configs/routes')
     ctx.body = {
       code: 20000,
       message: '成功',

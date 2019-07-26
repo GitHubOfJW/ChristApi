@@ -89,7 +89,7 @@ module.exports =  class MemberController {
     if(member){
       const role = {}
       if (member.is_admin && !member.role) {
-        const { constantRoutes,asyncRoutes} = require('../config/routes')
+        const { constantRoutes,asyncRoutes} = require('../configs/routes')
         role.role_key = 'admin'
         role.routes = asyncRoutes
         

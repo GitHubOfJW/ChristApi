@@ -26,7 +26,7 @@ if (isProduction) {
     domain: 'https://api.banbeigeng.com',
     appInfo: {
       appid: 'wx92589ad7fbbc7bf7',
-      secret: 'bad0bd6ede08bb06e56e998f90d84fa0'
+      secret: 'ac5e5b85b574277aa00e7a80754e4835'
     }
   }
 } else  {
@@ -56,7 +56,7 @@ if (isProduction) {
     domain: 'http://192.168.2.102:3000',
     appInfo: {
       appid: 'wx92589ad7fbbc7bf7',
-      secret: 'bad0bd6ede08bb06e56e998f90d84fa0'
+      secret: 'ac5e5b85b574277aa00e7a80754e4835'
     }
   }
 }

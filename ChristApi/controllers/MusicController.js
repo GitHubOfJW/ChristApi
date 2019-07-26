@@ -2,6 +2,7 @@ const {Music, Sequelize}  = require('../models/Music')
 const {Album, sequelize} = require('../models/Album')
 const {Favorite} = require('../models/Favorite')
 const {removeFileFlag,addFileFlag } = require('../utils/fileTool')
+const {domain} = require('../config')
 
 Music.hasOne(Favorite,{
   foreignKey: 'music_id',
@@ -178,7 +179,30 @@ module.exports =  class MusicController {
   
   // 获取列表
   static async minilist(ctx, next){
-    const { maxId =  -1, minId = -1, album_id, limit = 20 } = ctx.query
+    const { maxId =  -1, minId = -1, album_id, limit = 20, openid } = ctx.query
+    let sql = `SELECT \`music\`.\`id\`, \`music\`.\`name\`, \`music\`.\`author\`, \`music\`.\`descr\`, \`music\`.\`thumb_url\`, \`music\`.\`big_url\`, CONCAT('${domain}',\`music\`.\`source_url\`) as \`source_url\`, \`music\`.\`album_id\`, \`music\`.\`time\`, \`music\`.\`play_count\`, \`music\`.\`support_count\`, \`music\`.\`num\`, \`music\`.\`has_lrc\`, \`music\`.\`lrc_edit\`, \`music\`.\`createdAt\`, \`music\`.\`updatedAt\`, \`favorite\`.\`id\` AS \`favorite.id\`, \`favorite\`.\`music_id\` AS \`favorite.music_id\`, \`favorite\`.\`open_id\` AS \`favorite.open_id\`, \`favorite\`.\`is_delete\` AS \`favorite.is_delete\`, \`favorite\`.\`createdAt\` AS \`favorite.createdAt\`, \`favorite\`.\`updatedAt\` AS \`favorite.updatedAt\` FROM \`music\` AS \`music\` LEFT OUTER JOIN ( SELECT * FROM \`favorites\` WHERE \`favorites\`.\`open_id\` = '${openid}') AS \`favorite\` ON \`music\`.\`id\` = \`favorite\`.\`music_id\` WHERE \`music\`.\`is_delete\` = false AND \`music\`.\`album_id\` = '${album_id}' LIMIT ${limit}`
+    if (maxId != -1) {
+      sql = `SELECT \`music\`.\`id\`, \`music\`.\`name\`, \`music\`.\`author\`, \`music\`.\`descr\`, \`music\`.\`thumb_url\`, \`music\`.\`big_url\`, CONCAT('${domain}',\`music\`.\`source_url\`) as \`source_url\`, \`music\`.\`album_id\`, \`music\`.\`time\`, \`music\`.\`play_count\`, \`music\`.\`support_count\`, \`music\`.\`num\`, \`music\`.\`has_lrc\`, \`music\`.\`lrc_edit\`, \`music\`.\`createdAt\`, \`music\`.\`updatedAt\`, \`favorite\`.\`id\` AS \`favorite.id\`, \`favorite\`.\`music_id\` AS \`favorite.music_id\`, \`favorite\`.\`open_id\` AS \`favorite.open_id\`, \`favorite\`.\`is_delete\` AS \`favorite.is_delete\`, \`favorite\`.\`createdAt\` AS \`favorite.createdAt\`, \`favorite\`.\`updatedAt\` AS \`favorite.updatedAt\` FROM \`music\` AS \`music\` LEFT OUTER JOIN ( SELECT * FROM \`favorites\` WHERE \`favorites\`.\`open_id\` = '${openid}') AS \`favorite\` ON \`music\`.\`id\` = \`favorite\`.\`music_id\` WHERE \`music\`.\`is_delete\` = false AND \`music\`.\`album_id\` = '${album_id}' AND \`music\`.\`num\` > '${maxId}' ORDER BY \`num\` ASC LIMIT ${limit}`
+    } else if (minId != -1){
+      sql = `SELECT \`music\`.\`id\`, \`music\`.\`name\`, \`music\`.\`author\`, \`music\`.\`descr\`, \`music\`.\`thumb_url\`, \`music\`.\`big_url\`, CONCAT('${domain}',\`music\`.\`source_url\`) as \`source_url\`, \`music\`.\`album_id\`, \`music\`.\`time\`, \`music\`.\`play_count\`, \`music\`.\`support_count\`, \`music\`.\`num\`, \`music\`.\`has_lrc\`, \`music\`.\`lrc_edit\`, \`music\`.\`createdAt\`, \`music\`.\`updatedAt\`, \`favorite\`.\`id\` AS \`favorite.id\`, \`favorite\`.\`music_id\` AS \`favorite.music_id\`, \`favorite\`.\`open_id\` AS \`favorite.open_id\`, \`favorite\`.\`is_delete\` AS \`favorite.is_delete\`, \`favorite\`.\`createdAt\` AS \`favorite.createdAt\`, \`favorite\`.\`updatedAt\` AS \`favorite.updatedAt\` FROM \`music\` AS \`music\` LEFT OUTER JOIN ( SELECT * FROM \`favorites\` WHERE \`favorites\`.\`open_id\` = '${openid}') AS \`favorite\` ON \`music\`.\`id\` = \`favorite\`.\`music_id\` WHERE \`music\`.\`is_delete\` = false AND \`music\`.\`album_id\` = '${album_id}' AND \`music\`.\`num\` < '${minId}' ORDER BY \`num\` DESC LIMIT ${limit}`
+    }
+
+    const rows =  await sequelize.query(sql,{
+      type: sequelize.QueryTypes.SELECT,
+      // model: Music,
+      nest: true
+    })
+    
+    ctx.body = {
+      code: 20000,
+      message: '获取成功',
+      data: {
+        items:rows,
+        total:  1000
+      }
+    }
+
+    return
     //  查询
     const where = {
       is_delete: false,
@@ -208,7 +232,7 @@ module.exports =  class MusicController {
       limit: parseInt(limit),
       order: order,
       include: [{
-        model: Favorite,
+        model: Favorite
       }]
     })
   
@@ -224,10 +248,12 @@ module.exports =  class MusicController {
 
    // 获取收藏列表
    static async miniFavoriteList(ctx, next){
-    const { page = 1, pageSize = 20 } = ctx.query
+    const { page = 1, pageSize = 20, openid } = ctx.query
     //  查询
     const where = {
       is_delete: false,
+      '$favorite.is_delete$': false,
+      '$favorite.open_id$': openid
     }
 
     const data = await Music.findAndCountAll({
@@ -239,10 +265,7 @@ module.exports =  class MusicController {
       offset: parseInt((page -1)*pageSize),
       order:[[Sequelize.col('favorite.updatedAt'), "DESC"]],
       include: [{
-        model: Favorite,
-        where: {
-          is_delete: false
-        }
+        model: Favorite
       },{
         model: Album,
         attributes: {
@@ -275,9 +298,9 @@ module.exports =  class MusicController {
 
     //  查询
     const data = await Music.findAndCountAll({
-      attributes:{
-        exclude: ['lrc']
-      },
+      // attributes:{
+      //   exclude: ['lrc']
+      // },
       where: where,
       offset: ((page-1) * limit)+0,
       limit: parseInt(limit)
@@ -410,13 +433,13 @@ module.exports =  class MusicController {
     }
     
     // 如果图不一样了，那么就加回标记
-    if (oldMusic.thumb_url !== data.thumb_url) {
+    if (data.thumb_url && data.thumb_url !== oldMusic.thumb_url) {
       addFileFlag(oldMusic.thumb_url)
     }
-    if (oldMusic.big_url !== data.big_url) {
+    if (data.big_url && data.big_url !== oldMusic.big_url) {
       addFileFlag(oldMusic.big_url)
     }
-    if (oldMusic.source_url !== data.source_url) {
+    if (data.source_url && data.source_url !== oldMusic.source_url) {
       addFileFlag(oldMusic.source_url)
     }
     

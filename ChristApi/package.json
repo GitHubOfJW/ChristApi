@@ -11,6 +11,7 @@
   "dependencies": {
     "bluebird": "^3.5.4",
     "debug": "^2.6.3",
+    "dottie": "^2.0.1",
     "koa": "^2.2.0",
     "koa-bodyparser": "^3.2.0",
     "koa-compress": "^3.0.0",
@@ -33,7 +34,7 @@
     "mysql2": "^1.6.5",
     "node-fetch": "^2.5.0",
     "pug": "^2.0.0-rc.1",
-    "sequelize": "^5.3.5"
+    "sequelize": "^5.10.2"
   },
   "devDependencies": {
     "nodemon": "^1.8.1"

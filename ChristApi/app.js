@@ -83,6 +83,9 @@ app.use(loadAuth())
 const checkAuth = require('./middleware/check-auth')
 app.use(checkAuth())
 
+const streamFile = require('./middleware/stream-file')
+app.use(streamFile())
+
 // routes
 const files = fs.readdirSync('./routes')
 // 遍历加载路由

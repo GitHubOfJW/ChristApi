@@ -30,7 +30,6 @@ Favorite.init({
       defaultValue: false,
       comment: '是否删除'
     }
-    
 },{
   sequelize,
   modelName:'favorite',

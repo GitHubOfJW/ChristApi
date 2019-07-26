@@ -7,6 +7,16 @@ module.exports =  class FavriteController {
   static async favorite(ctx, next){
     // 收藏功能
     const { music_id, openid, status = true } = ctx.request.body
+    if(!openid) {
+      ctx.body = {
+        code: 50000,
+        message: '失败',
+        data: {
+          favorite: status
+        }
+      }
+      return
+    }
     await sequelize.transaction(async t => {
       const favorite = await Favorite.findOne({
         where: {
