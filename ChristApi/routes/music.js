@@ -7,6 +7,7 @@ router.prefix('/music')
 router.get('/list', controller.list)
 router.post('/add', controller.create)
 router.put('/edit/:id', controller.update)
+router.put('/changeSale/:id',controller.change_sale)
 
 router.get('/mini/list',controller.minilist)
 router.get('/mini/favorites',controller.miniFavoriteList)

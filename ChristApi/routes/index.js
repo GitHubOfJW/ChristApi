@@ -17,4 +17,5 @@ router.get('/mini/questions', Question.list)
 // 获取二维码
 router.post('/mini/getcode',Index.miniCode)
 router.get('/mini/getAccToken',Index.miniAccToken)
+router.get('/mini/getAccToken1',Index.miniAccToken1)
 module.exports = router

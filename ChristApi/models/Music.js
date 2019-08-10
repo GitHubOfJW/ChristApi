@@ -104,6 +104,11 @@ Music.init({
       defaultValue: true,
       comment: 'lrc需要编辑'
     },
+    is_sale: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: true,
+      comment: '是否上架'
+    },
     is_delete:{
       type: Sequelize.BOOLEAN,
       defaultValue: false,

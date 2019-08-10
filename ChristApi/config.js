@@ -27,6 +27,10 @@ if (isProduction) {
     appInfo: {
       appid: 'wx92589ad7fbbc7bf7',
       secret: 'ac5e5b85b574277aa00e7a80754e4835'
+    },
+    appInfo1: {
+      appid: 'wxfa352bce6edffea1',
+      secret: '74c4163714ac819167efa3eac248277e'
     }
   }
 } else  {
@@ -57,6 +61,10 @@ if (isProduction) {
     appInfo: {
       appid: 'wx92589ad7fbbc7bf7',
       secret: 'ac5e5b85b574277aa00e7a80754e4835'
+    },
+    appInfo1: {
+      appid: 'wxfa352bce6edffea1',
+      secret: '74c4163714ac819167efa3eac248277e'
     }
   }
 }

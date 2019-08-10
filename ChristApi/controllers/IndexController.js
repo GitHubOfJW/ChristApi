@@ -5,7 +5,7 @@ const path =  require('path')
 const { Album }  = require('../models/Album')
 const { Music } = require('../models/Music')
 const { miniTopMenu } = require('../configs/meta')
-const { appInfo } = require('../config')
+const { appInfo, appInfo1} = require('../config')
 const uuidv4 = require('uuid/v4')
 const fs = require('fs')
 const fetch  = require('node-fetch')
@@ -164,6 +164,20 @@ module.exports = class IndexController {
       'grant_type':'client_credential',
       'appid': appInfo.appid,
       'secret': appInfo.secret
+    })
+    ctx.body = {
+      code: 20000,
+      data: data
+    }
+
+  }
+
+  static async miniAccToken1 (ctx, next) {
+    //?grant_type=client_credential&appid=' + appInfo.appid + '&secret=' + appInfo.secret
+    const data = await ctx.get('https://api.weixin.qq.com/cgi-bin/token',{
+      'grant_type':'client_credential',
+      'appid': appInfo1.appid,
+      'secret': appInfo1.secret
     })
     ctx.body = {
       code: 20000,

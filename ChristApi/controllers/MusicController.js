@@ -68,7 +68,8 @@ module.exports =  class MusicController {
           album_id: music.album_id,
           num: {
             [Sequelize.Op.gt]: music.num
-          }
+          },
+          is_sale:true
         },
         order:[[Sequelize.col('num'), "ASC"]],
         include: [{
@@ -81,11 +82,11 @@ module.exports =  class MusicController {
         nextMusic =  await Music.findOne({
           where: {
             album_id: music.album_id,
+            is_sale:true
           },
           include: [{
             model: Favorite
-          }],
-          limit:1
+          }]
         })
       }
 
@@ -140,7 +141,8 @@ module.exports =  class MusicController {
           album_id: music.album_id,
           num: {
             [Sequelize.Op.lt]: music.num
-          }
+          },
+          is_sale:true
         },
         order:[[Sequelize.col('num'), 'DESC']],
         include: [{
@@ -153,12 +155,12 @@ module.exports =  class MusicController {
         prevMusic =  await Music.findOne({
           where: {
             album_id: music.album_id,
+            is_sale:true
           },
           include: [{
             model: Favorite
           }],
-          order:[[Sequelize.col('num'), 'DESC']],
-          limit:1
+          order:[[Sequelize.col('num'), 'DESC']]
         })
       }
 
@@ -180,11 +182,11 @@ module.exports =  class MusicController {
   // 获取列表
   static async minilist(ctx, next){
     const { maxId =  -1, minId = -1, album_id, limit = 20, openid } = ctx.query
-    let sql = `SELECT \`music\`.\`id\`, \`music\`.\`name\`, \`music\`.\`author\`, \`music\`.\`descr\`, \`music\`.\`thumb_url\`, \`music\`.\`big_url\`, CONCAT('${domain}',\`music\`.\`source_url\`) as \`source_url\`, \`music\`.\`album_id\`, \`music\`.\`time\`, \`music\`.\`play_count\`, \`music\`.\`support_count\`, \`music\`.\`num\`, \`music\`.\`has_lrc\`, \`music\`.\`lrc_edit\`, \`music\`.\`createdAt\`, \`music\`.\`updatedAt\`, \`favorite\`.\`id\` AS \`favorite.id\`, \`favorite\`.\`music_id\` AS \`favorite.music_id\`, \`favorite\`.\`open_id\` AS \`favorite.open_id\`, \`favorite\`.\`is_delete\` AS \`favorite.is_delete\`, \`favorite\`.\`createdAt\` AS \`favorite.createdAt\`, \`favorite\`.\`updatedAt\` AS \`favorite.updatedAt\` FROM \`music\` AS \`music\` LEFT OUTER JOIN ( SELECT * FROM \`favorites\` WHERE \`favorites\`.\`open_id\` = '${openid}') AS \`favorite\` ON \`music\`.\`id\` = \`favorite\`.\`music_id\` WHERE \`music\`.\`is_delete\` = false AND \`music\`.\`album_id\` = '${album_id}' LIMIT ${limit}`
+    let sql = `SELECT \`music\`.\`id\`, \`music\`.\`name\`,\`music\`.\`is_sale\`, \`music\`.\`author\`, \`music\`.\`descr\`, \`music\`.\`thumb_url\`, \`music\`.\`big_url\`, CONCAT('${domain}',\`music\`.\`source_url\`) as \`source_url\`, \`music\`.\`album_id\`, \`music\`.\`time\`, \`music\`.\`play_count\`, \`music\`.\`support_count\`, \`music\`.\`num\`, \`music\`.\`has_lrc\`, \`music\`.\`lrc_edit\`, \`music\`.\`createdAt\`, \`music\`.\`updatedAt\`, \`favorite\`.\`id\` AS \`favorite.id\`, \`favorite\`.\`music_id\` AS \`favorite.music_id\`, \`favorite\`.\`open_id\` AS \`favorite.open_id\`, \`favorite\`.\`is_delete\` AS \`favorite.is_delete\`, \`favorite\`.\`createdAt\` AS \`favorite.createdAt\`, \`favorite\`.\`updatedAt\` AS \`favorite.updatedAt\` FROM \`music\` AS \`music\` LEFT OUTER JOIN ( SELECT * FROM \`favorites\` WHERE \`favorites\`.\`open_id\` = '${openid}') AS \`favorite\` ON \`music\`.\`id\` = \`favorite\`.\`music_id\` WHERE \`music\`.\`is_delete\` = false AND \`music\`.\`album_id\` = '${album_id}' LIMIT ${limit}`
     if (maxId != -1) {
-      sql = `SELECT \`music\`.\`id\`, \`music\`.\`name\`, \`music\`.\`author\`, \`music\`.\`descr\`, \`music\`.\`thumb_url\`, \`music\`.\`big_url\`, CONCAT('${domain}',\`music\`.\`source_url\`) as \`source_url\`, \`music\`.\`album_id\`, \`music\`.\`time\`, \`music\`.\`play_count\`, \`music\`.\`support_count\`, \`music\`.\`num\`, \`music\`.\`has_lrc\`, \`music\`.\`lrc_edit\`, \`music\`.\`createdAt\`, \`music\`.\`updatedAt\`, \`favorite\`.\`id\` AS \`favorite.id\`, \`favorite\`.\`music_id\` AS \`favorite.music_id\`, \`favorite\`.\`open_id\` AS \`favorite.open_id\`, \`favorite\`.\`is_delete\` AS \`favorite.is_delete\`, \`favorite\`.\`createdAt\` AS \`favorite.createdAt\`, \`favorite\`.\`updatedAt\` AS \`favorite.updatedAt\` FROM \`music\` AS \`music\` LEFT OUTER JOIN ( SELECT * FROM \`favorites\` WHERE \`favorites\`.\`open_id\` = '${openid}') AS \`favorite\` ON \`music\`.\`id\` = \`favorite\`.\`music_id\` WHERE \`music\`.\`is_delete\` = false AND \`music\`.\`album_id\` = '${album_id}' AND \`music\`.\`num\` > '${maxId}' ORDER BY \`num\` ASC LIMIT ${limit}`
+      sql = `SELECT \`music\`.\`id\`, \`music\`.\`name\`, \`music\`.\`is_sale\`,\`music\`.\`author\`, \`music\`.\`descr\`, \`music\`.\`thumb_url\`, \`music\`.\`big_url\`, CONCAT('${domain}',\`music\`.\`source_url\`) as \`source_url\`, \`music\`.\`album_id\`, \`music\`.\`time\`, \`music\`.\`play_count\`, \`music\`.\`support_count\`, \`music\`.\`num\`, \`music\`.\`has_lrc\`, \`music\`.\`lrc_edit\`, \`music\`.\`createdAt\`, \`music\`.\`updatedAt\`, \`favorite\`.\`id\` AS \`favorite.id\`, \`favorite\`.\`music_id\` AS \`favorite.music_id\`, \`favorite\`.\`open_id\` AS \`favorite.open_id\`, \`favorite\`.\`is_delete\` AS \`favorite.is_delete\`, \`favorite\`.\`createdAt\` AS \`favorite.createdAt\`, \`favorite\`.\`updatedAt\` AS \`favorite.updatedAt\` FROM \`music\` AS \`music\` LEFT OUTER JOIN ( SELECT * FROM \`favorites\` WHERE \`favorites\`.\`open_id\` = '${openid}') AS \`favorite\` ON \`music\`.\`id\` = \`favorite\`.\`music_id\` WHERE \`music\`.\`is_delete\` = false AND \`music\`.\`album_id\` = '${album_id}' AND \`music\`.\`num\` > '${maxId}' ORDER BY \`num\` ASC LIMIT ${limit}`
     } else if (minId != -1){
-      sql = `SELECT \`music\`.\`id\`, \`music\`.\`name\`, \`music\`.\`author\`, \`music\`.\`descr\`, \`music\`.\`thumb_url\`, \`music\`.\`big_url\`, CONCAT('${domain}',\`music\`.\`source_url\`) as \`source_url\`, \`music\`.\`album_id\`, \`music\`.\`time\`, \`music\`.\`play_count\`, \`music\`.\`support_count\`, \`music\`.\`num\`, \`music\`.\`has_lrc\`, \`music\`.\`lrc_edit\`, \`music\`.\`createdAt\`, \`music\`.\`updatedAt\`, \`favorite\`.\`id\` AS \`favorite.id\`, \`favorite\`.\`music_id\` AS \`favorite.music_id\`, \`favorite\`.\`open_id\` AS \`favorite.open_id\`, \`favorite\`.\`is_delete\` AS \`favorite.is_delete\`, \`favorite\`.\`createdAt\` AS \`favorite.createdAt\`, \`favorite\`.\`updatedAt\` AS \`favorite.updatedAt\` FROM \`music\` AS \`music\` LEFT OUTER JOIN ( SELECT * FROM \`favorites\` WHERE \`favorites\`.\`open_id\` = '${openid}') AS \`favorite\` ON \`music\`.\`id\` = \`favorite\`.\`music_id\` WHERE \`music\`.\`is_delete\` = false AND \`music\`.\`album_id\` = '${album_id}' AND \`music\`.\`num\` < '${minId}' ORDER BY \`num\` DESC LIMIT ${limit}`
+      sql = `SELECT \`music\`.\`id\`, \`music\`.\`name\`,\`music\`.\`is_sale\`, \`music\`.\`author\`, \`music\`.\`descr\`, \`music\`.\`thumb_url\`, \`music\`.\`big_url\`, CONCAT('${domain}',\`music\`.\`source_url\`) as \`source_url\`, \`music\`.\`album_id\`, \`music\`.\`time\`, \`music\`.\`play_count\`, \`music\`.\`support_count\`, \`music\`.\`num\`, \`music\`.\`has_lrc\`, \`music\`.\`lrc_edit\`, \`music\`.\`createdAt\`, \`music\`.\`updatedAt\`, \`favorite\`.\`id\` AS \`favorite.id\`, \`favorite\`.\`music_id\` AS \`favorite.music_id\`, \`favorite\`.\`open_id\` AS \`favorite.open_id\`, \`favorite\`.\`is_delete\` AS \`favorite.is_delete\`, \`favorite\`.\`createdAt\` AS \`favorite.createdAt\`, \`favorite\`.\`updatedAt\` AS \`favorite.updatedAt\` FROM \`music\` AS \`music\` LEFT OUTER JOIN ( SELECT * FROM \`favorites\` WHERE \`favorites\`.\`open_id\` = '${openid}') AS \`favorite\` ON \`music\`.\`id\` = \`favorite\`.\`music_id\` WHERE \`music\`.\`is_delete\` = false AND \`music\`.\`album_id\` = '${album_id}' AND \`music\`.\`num\` < '${minId}' ORDER BY \`num\` DESC LIMIT ${limit}`
     }
 
     const rows =  await sequelize.query(sql,{
@@ -199,49 +201,6 @@ module.exports =  class MusicController {
       data: {
         items:rows,
         total:  1000
-      }
-    }
-
-    return
-    //  查询
-    const where = {
-      is_delete: false,
-    }
-
-    if(album_id) {
-      where.album_id =  album_id
-    }
-    const order = []
-    if(maxId != -1) {
-      order.push([Sequelize.col('num'), "ASC"])
-      where.num = {
-        [Sequelize.Op.gt]: maxId
-      }
-    }else if(minId != -1){
-      order.push([Sequelize.col('num'), "DESC"])
-      where.num = {
-        [Sequelize.Op.lt]: minId
-      }
-    }
-
-    const data = await Music.findAndCountAll({
-      attributes:{
-        exclude: ['is_delete']
-      },
-      where: where,
-      limit: parseInt(limit),
-      order: order,
-      include: [{
-        model: Favorite
-      }]
-    })
-  
-    ctx.body = {
-      code: 20000,
-      message: '获取成功',
-      data: {
-        items:data.rows,
-        total:data.count
       }
     }
   }
@@ -531,5 +490,29 @@ module.exports =  class MusicController {
       code: 20000,
       message: '恢复成功'
     }    
+  }
+
+  static async change_sale(ctx, next) {
+    const id = ctx.params.id
+    const music = await Music.findOne({
+      where:{
+        id: id
+      }
+    })
+    await Music.update({
+      is_sale: !music.is_sale
+    },{
+      where:{
+        id:id
+      }
+    })
+
+    ctx.body = {
+      code: 20000,
+      data: {
+        is_sale:!music.is_sale
+      },
+      message:'成功'
+    }
   }
 }
