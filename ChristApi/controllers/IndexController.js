@@ -8,7 +8,6 @@ const { miniTopMenu } = require('../configs/meta')
 const { appInfo, appInfo1} = require('../config')
 const uuidv4 = require('uuid/v4')
 const fs = require('fs')
-const fetch  = require('node-fetch')
 module.exports = class IndexController {
 
   // 检查权限
@@ -131,30 +130,6 @@ module.exports = class IndexController {
     }
     ctx.body = {
       'mess':data
-    }
-  }
-
-  // 获取二维码
-  static async miniCode(ctx, next) {
-    const { accessToken,scene = 'none' } = ctx.request.body 
-    const body = {
-      access_token: accessToken,
-      scene: scene
-    }
-
-    const res = await fetch('https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=' + accessToken, {
-        method: 'post',
-        body: JSON.stringify(body),
-        headers: { 'Content-Type': 'application/json' },
-    })
-    console.log('就是看看',res.body,'看看啊')
-    // const data = JSON.parse(res)
-
-
-    ctx.body = {
-      code: 20000,
-      message: '成功',
-      data: res
     }
   }
 
