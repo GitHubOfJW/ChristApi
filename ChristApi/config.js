@@ -19,8 +19,8 @@ if (isProduction) {
       password:'kbny7sEJkXpY8JsF', // 密码
       pool:{
         max:10,
-        min:5,
-        idle:1000
+        min:0,
+        idle:10000
       },
     },
     domain: 'https://api.banbeigeng.com',

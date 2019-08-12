@@ -11,11 +11,11 @@ const sequelize = new Sequelize(dbConfig.dbName,dbConfig.username,dbConfig.passw
 })
 
 
-sequelize.authenticate().then(() => {
-    console.log('数据库连接成功');
-  }).catch(err => {
-    console.error('未能连接到数据库', err);
-  });
+// sequelize.authenticate().then(() => {
+//     console.log('数据库连接成功');
+//   }).catch(err => {
+//     console.error('未能连接到数据库', err);
+//   });
 
 
 
