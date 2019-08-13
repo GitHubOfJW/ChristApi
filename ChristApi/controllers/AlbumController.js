@@ -13,11 +13,15 @@ module.exports =  class AlbumController {
       return
     }
     // 查询专辑
-    const album = await Album.findOne({
+    let album = await Album.findOne({
       where: {
         id: ctx.params.id
       }
     })
+
+    if (!album) {
+      album = await Album.findOne()
+    }
     
     ctx.body = {
       code: 20000,
